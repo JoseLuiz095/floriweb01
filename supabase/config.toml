@@ -1,0 +1,5 @@
+# FloriWeb V3 RC2
+# public-checkout e um endpoint publico protegido dentro do handler por
+# origem, Cloudflare Turnstile, rate limit e validacao server-side do pedido.
+[functions.public-checkout]
+verify_jwt = false

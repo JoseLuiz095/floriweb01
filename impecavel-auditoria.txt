@@ -1,0 +1,6 @@
+
+Found 66 files (0 HTML) in src/.
+Scanning may take a while.
+Target a specific subdirectory to narrow scope.
+Continue? [Y/n] ^C^CDeseja finalizar o arquivo em lotes (S/N)? 
+^CA sintaxe do comando est  incorreta.

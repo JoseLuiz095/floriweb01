@@ -1,0 +1,34 @@
+import { Check, Clock3, Save } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useToast } from '../../contexts/ToastContext';
+import { platformApi } from '../../services/platformApi';
+import type { Plan, PlatformSettings } from '../../types';
+import { currency } from '../../utils/format';
+
+export default function MasterPlans(){
+  const {showToast}=useToast();
+  const[plans,setPlans]=useState<Plan[]>([]);
+  const[settings,setSettings]=useState<PlatformSettings>({demoDurationDays:30,demoWarningDays:7});
+  const[saving,setSaving]=useState('');
+  const[savingSettings,setSavingSettings]=useState(false);
+
+  useEffect(()=>{void Promise.all([platformApi.listPlans(),platformApi.getPlatformSettings()]).then(([p,s])=>{setPlans(p);setSettings(s)}).catch((e)=>showToast(e instanceof Error?e.message:'Falha ao carregar planos.','error'))},[]);
+  const update=(id:string,patch:Partial<Plan>)=>setPlans((items)=>items.map((p)=>p.id===id?{...p,...patch}:p));
+  const save=async(plan:Plan)=>{setSaving(plan.id);try{const saved=await platformApi.savePlan(plan);update(plan.id,saved);showToast(`Plano ${saved.name} atualizado.`,'success')}catch(e){showToast(e instanceof Error?e.message:'Erro ao salvar plano.','error')}finally{setSaving('')}};
+  const saveSettings=async()=>{if(settings.demoWarningDays>=settings.demoDurationDays){showToast('O aviso antecipado deve ser menor que o período total da Demo.','error');return}setSavingSettings(true);try{const saved=await platformApi.savePlatformSettings(settings);setSettings(saved);showToast('Configuração da demonstração atualizada.','success')}catch(e){showToast(e instanceof Error?e.message:'Falha ao salvar configuração da Demo.','error')}finally{setSavingSettings(false)}};
+
+  return <>
+    <div className="admin-page-title"><div><span className="eyebrow">COMERCIAL</span><h1>Planos</h1><p>Valores, limites e período de demonstração usados para novas lojas e upgrades.</p></div></div>
+
+    <section className="admin-card demo-trial-settings">
+      <div className="admin-card__header"><div><span className="eyebrow">PLANO DEMO</span><h2>Período de avaliação</h2></div><Clock3 size={22}/></div>
+      <p>Estas regras são aplicadas automaticamente a novas lojas cadastradas no plano Demo. O prazo individual também pode ser ajustado na gestão de cada cliente.</p>
+      <div className="demo-settings-grid"><label>Duração da Demo<input type="number" min="1" max="365" value={settings.demoDurationDays} onChange={(e)=>setSettings((s)=>({...s,demoDurationDays:Number(e.target.value)}))}/><small>Inicialmente recomendado: 30 dias.</small></label><label>Aviso antecipado<input type="number" min="1" max="90" value={settings.demoWarningDays} onChange={(e)=>setSettings((s)=>({...s,demoWarningDays:Number(e.target.value)}))}/><small>O Admin Master será avisado antes do vencimento.</small></label><button className="secondary-button" disabled={savingSettings} onClick={()=>void saveSettings()}><Save size={17}/>{savingSettings?'Salvando...':'Salvar período Demo'}</button></div>
+      <div className="demo-settings-preview"><strong>Como ficará:</strong><span>Nova Demo recebe <b>{settings.demoDurationDays} dias</b> de acesso.</span><span>Quando faltarem <b>{settings.demoWarningDays} dias</b>, aparece um alerta no Admin Master.</span><span>No vencimento, vitrine e painel são pausados automaticamente sem apagar dados.</span></div>
+    </section>
+
+    <div className="master-plan-grid">{plans.map((plan)=><article className={`admin-card master-plan-card ${plan.code==='PRO'?'featured':''}`} key={plan.id}>{plan.code==='PRO'&&<span className="plan-featured-badge">Mais indicado</span>}<div className="master-plan-title"><div><span className="eyebrow">{plan.code}</span><input value={plan.name} onChange={(e)=>update(plan.id,{name:e.target.value})}/></div><label className="plan-active-toggle"><input type="checkbox" checked={plan.active} onChange={(e)=>update(plan.id,{active:e.target.checked})}/>Ativo</label></div><div className="master-price-row"><label>Mensalidade<input type="number" step="0.01" min="0" value={plan.monthlyPrice||0} onChange={(e)=>update(plan.id,{monthlyPrice:Number(e.target.value)})}/><small>{plan.code==='DEMO'?'Sem mensalidade':`${currency.format(plan.monthlyPrice||0)}/mês`}</small></label><label>Implantação<input type="number" step="0.01" min="0" value={plan.setupPrice||0} onChange={(e)=>update(plan.id,{setupPrice:Number(e.target.value)})}/></label></div><div className="master-plan-limits"><label>Produtos ativos<input type="number" min="0" value={plan.productLimit??''} onChange={(e)=>update(plan.id,{productLimit:e.target.value===''?null:Number(e.target.value)})}/></label><label>Fotos / produto<input type="number" min="0" value={plan.imageLimitPerProduct??''} onChange={(e)=>update(plan.id,{imageLimitPerProduct:e.target.value===''?null:Number(e.target.value)})}/></label><label>Categorias<input type="number" min="0" value={plan.categoryLimit??''} onChange={(e)=>update(plan.id,{categoryLimit:e.target.value===''?null:Number(e.target.value)})}/></label><label>Adicionais<input type="number" min="0" value={plan.addonLimit??''} onChange={(e)=>update(plan.id,{addonLimit:e.target.value===''?null:Number(e.target.value)})}/></label><label>Usuários admin<input type="number" min="1" value={plan.adminUserLimit??''} onChange={(e)=>update(plan.id,{adminUserLimit:e.target.value===''?null:Number(e.target.value)})}/></label></div><div className="master-plan-features"><label><input type="checkbox" checked={plan.customDomain} onChange={(e)=>update(plan.id,{customDomain:e.target.checked})}/><Check size={15}/>Domínio próprio</label><label><input type="checkbox" checked={plan.reports} onChange={(e)=>update(plan.id,{reports:e.target.checked})}/><Check size={15}/>Relatórios</label><label><input type="checkbox" checked={plan.prioritySupport} onChange={(e)=>update(plan.id,{prioritySupport:e.target.checked})}/><Check size={15}/>Suporte prioritário</label></div><button className="primary-button full-button" disabled={saving===plan.id} onClick={()=>void save(plan)}><Save size={17}/>{saving===plan.id?'Salvando...':'Salvar plano'}</button></article>)}</div>
+
+    <section className="admin-card master-anchor-card"><span className="eyebrow">REFERÊNCIA COMERCIAL</span><h2>Business · a partir de R$ 349,90/mês</h2><p>Use como âncora real para clientes que precisam de multiunidade, integrações, ERP/financeiro, APIs ou processos exclusivos. A implantação e o desenvolvimento ficam sob orçamento. Não use preço riscado fictício: a diferença de valor deve ser sustentada por escopo e suporte maiores.</p><div className="master-anchor-comparison"><span>Essencial <strong>R$ 49,90</strong></span><span>Profissional <strong>R$ 89,90</strong></span><span>Premium <strong>R$ 149,90</strong></span><span>Business <strong>R$ 349,90+</strong></span></div></section>
+  </>;
+}

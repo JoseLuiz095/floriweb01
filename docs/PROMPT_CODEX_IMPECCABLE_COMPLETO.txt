@@ -1,0 +1,27 @@
+$impeccable polish FloriWeb inteiro como produto SaaS pronto para venda. Faca uma unica passada visual completa e limitada cobrindo Admin, primeiros passos, catalogo administrativo, pedidos, analytics, configuracoes, Storefront, detalhe do produto, carrinho, Checkout, sucesso do pedido, Admin Master, lojas, planos, diagnostico, login, primeiro acesso e MFA.
+
+Antes de editar, leia AGENTS.md, PRODUCT.md, DESIGN.md e .impeccable/surfaces/floriweb-completo.md. Considere o codigo atual a verdade funcional. A identidade atual deve ser refinada, nao substituida.
+
+Objetivo comercial: o FloriWeb precisa parecer um produto profissional e especifico para floriculturas, com confianca suficiente para demonstracao e venda. Evite aparencia de template SaaS generico, excesso de cards, bordas, cinzas, icones decorativos e elementos com peso visual igual.
+
+Trabalhe em uma unica rodada de qualidade, sem ficar fazendo ciclos infinitos. Priorize, nesta ordem:
+1. hierarquia e clareza das tarefas;
+2. consistencia de layout, espacamento, tipografia, inputs, botoes, tabelas, badges e estados;
+3. responsividade real em 1366x768, 390x844 e largura intermediaria;
+4. Storefront orientado a produto e conversao mobile;
+5. Checkout com baixa ansiedade, resumo/total evidentes e CTA persistente sem cobrir conteudo ou Turnstile;
+6. Admin com navegacao operacional clara e dashboard acionavel;
+7. Admin Master como cockpit comercial para pagantes, demos, implantacao, atencao e suspensoes;
+8. acessibilidade: contraste, foco visivel, labels, teclado e touch targets;
+9. estados loading, empty, error, success, disabled e permission coerentes;
+10. limpeza de CSS redundante e estilos one-off criados durante a passada.
+
+Pode alterar apenas apresentacao: src/**/*.tsx na estrutura visual, componentes de apresentacao, classes, src/styles.css e assets visuais estritamente necessarios. Preserve assinaturas de props, estados funcionais, handlers, rotas e contratos.
+
+PROIBIDO alterar supabase/**, src/services/**, src/lib/**, Auth/MFA, chamadas de API, useEffects de dados, regras de negocio, precos, payload do pedido, analytics de coleta, Turnstile, rate limit, planos, isolamento multi-loja, wrangler, variaveis de ambiente ou dependencias sem necessidade estritamente visual. Nao remova validacoes para simplificar a interface.
+
+Nao adicione bibliotecas visuais pesadas. Prefira CSS e componentes existentes. Nao importe fontes externas. Preserve o verde profundo, superfices off-white e o contraste editorial serif somente onde ele melhora a experiencia de compra.
+
+Se houver acesso a renderizacao/browser, valide desktop e mobile juntos. Se nao houver, faca a passada baseada em codigo e estilos sem inventar comportamento. Ao final execute npm run validate. Depois execute npx --yes impeccable@3.6.0 detect src/ apenas uma vez se o hook nao tiver feito a verificacao automaticamente. Corrija em um unico lote apenas achados reais dentro do escopo visual e faca no maximo uma confirmacao final.
+
+Ao terminar, entregue um resumo objetivo com: principais mudancas visuais, arquivos alterados, riscos funcionais evitados, resultado de npm run validate e qualquer melhoria que voce deixou de fazer porque exigiria backend/regra de negocio.
