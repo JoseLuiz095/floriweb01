@@ -1,4 +1,4 @@
-import { Activity, BarChart3, CreditCard, Eye, MapPin, PackageCheck, ShoppingBag, ShoppingCart, Truck } from 'lucide-react';
+import { Activity, BarChart3, CreditCard, Eye, MapPin, PackageCheck, ShieldCheck, ShoppingBag, ShoppingCart, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
@@ -39,7 +39,7 @@ export default function Analytics(){
     setReportLoading(true);setReportError('');
     void loadAnalyticsReport(settings.id,from.toISOString(),to.toISOString())
       .then(setReport)
-      .catch((analyticsError:unknown)=>setReportError(analyticsError instanceof Error?analyticsError.message:'Não foi possível carregar o funil de conversão.'))
+      .catch((analyticsError:unknown)=>{const message=analyticsError instanceof Error?analyticsError.message:'';const missingRpc=/get_store_analytics_v3|schema cache|PGRST202/i.test(message);setReportError(missingRpc?'O módulo de Analytics de conversão ainda não está ativo no banco desta instalação.':'Não foi possível carregar o funil de conversão agora. Tente novamente em alguns instantes.');})
       .finally(()=>setReportLoading(false));
   },[settings.id,planUsage.plan.reports,rangeDays]);
 
@@ -58,7 +58,7 @@ export default function Analytics(){
   const hours=sortedEntries(countBy(valid,(order:Order)=>`${String(new Date(order.createdAt).getHours()).padStart(2,'0')}h`)).sort((a,b)=>a[0].localeCompare(b[0]));
 
   const funnel=[
-    {label:'Sessões na vitrine',value:report.storefrontSessions,detail:'visitantes anônimos',icon:Eye},
+    {label:'Sessões na vitrine',value:report.storefrontSessions,detail:'sessões de navegação',icon:Eye},
     {label:'Viram produtos',value:report.productViewSessions,detail:`${report.productViews} visualizações`,icon:PackageCheck},
     {label:'Adicionaram ao carrinho',value:report.addToCartSessions,detail:`${report.cartAbandonmentRate.toFixed(1)}% abandono`,icon:ShoppingCart},
     {label:'Iniciaram checkout',value:report.checkoutSessions,detail:`${report.checkoutAbandonmentRate.toFixed(1)}% abandono`,icon:Activity},
@@ -67,11 +67,13 @@ export default function Analytics(){
   ];
 
   return <>
-    <div className="admin-page-title analytics-title"><div><span className="eyebrow">ANÁLISES</span><h1>Desempenho comercial</h1><p>Funil de conversão e indicadores operacionais sem armazenar dados pessoais na telemetria.</p></div><div className="analytics-title-actions"><select value={rangeDays} onChange={(e)=>setRangeDays(Number(e.target.value))}><option value={7}>Últimos 7 dias</option><option value={30}>Últimos 30 dias</option><option value={90}>Últimos 90 dias</option></select><span className="analytics-privacy-pill">Telemetria anônima · sem PII</span></div></div>
+    <div className="admin-page-title analytics-title"><div><span className="eyebrow">ANÁLISES</span><h1>Desempenho comercial</h1><p>Funil de conversão e indicadores operacionais para entender a jornada de compra.</p></div><div className="analytics-title-actions"><select value={rangeDays} onChange={(e)=>setRangeDays(Number(e.target.value))}><option value={7}>Últimos 7 dias</option><option value={30}>Últimos 30 dias</option><option value={90}>Últimos 90 dias</option></select></div></div>
 
-    {reportLoading?<LoadingState label="Calculando funil de conversão..."/>:reportError?<section className="admin-card analytics-rollout-warning"><strong>Analytics de conversão ainda não disponível</strong><p>{reportError}</p><span>Os indicadores de pedidos abaixo continuam funcionando. O funil começa a acumular dados somente após a ativação do RC2.</span></section>:<>
+    <details className="analytics-privacy-note"><summary><ShieldCheck size={17}/>Privacidade das métricas</summary><p>O funil usa um identificador aleatório de navegação e eventos de uso da vitrine. Essa telemetria não recebe nome, telefone, e-mail, endereço, mensagem do cartão ou observações. Os dados do pedido continuam armazenados normalmente na área de Pedidos.</p></details>
+
+    {reportLoading?<LoadingState label="Calculando funil de conversão..."/>:reportError?<section className="admin-card analytics-rollout-warning"><strong>Analytics de conversão ainda não disponível</strong><p>{reportError}</p><span>Os indicadores baseados em pedidos abaixo continuam funcionando. O funil volta a aparecer assim que o módulo de Analytics do banco estiver ativo.</span></section>:<>
       <div className="analytics-funnel-grid">{funnel.map(({label,value,detail,icon:Icon})=><article className="admin-card analytics-funnel-stat" key={label}><span><Icon size={18}/></span><div><small>{label}</small><strong>{value}</strong><p>{detail}</p></div></article>)}</div>
-      <div className="analytics-commercial-grid"><article className="admin-card analytics-commercial-kpi"><span>Receita do período</span><strong>{currency.format(report.revenue)}</strong><small>Pedidos não cancelados dentro do período selecionado.</small></article><article className="admin-card analytics-commercial-kpi"><span>Ticket médio</span><strong>{currency.format(report.averageTicket)}</strong><small>Valor médio dos pedidos registrados no período.</small></article><article className="admin-card analytics-commercial-kpi"><span>Conversão vitrine → pedido</span><strong>{report.conversionRate.toFixed(1)}%</strong><small>Sessões anônimas com pedido ÷ sessões da vitrine.</small></article></div>
+      <div className="analytics-commercial-grid"><article className="admin-card analytics-commercial-kpi"><span>Receita do período</span><strong>{currency.format(report.revenue)}</strong><small>Pedidos não cancelados dentro do período selecionado.</small></article><article className="admin-card analytics-commercial-kpi"><span>Ticket médio</span><strong>{currency.format(report.averageTicket)}</strong><small>Valor médio dos pedidos registrados no período.</small></article><article className="admin-card analytics-commercial-kpi"><span>Conversão vitrine → pedido</span><strong>{report.conversionRate.toFixed(1)}%</strong><small>Sessões que geraram pedido ÷ sessões da vitrine.</small></article></div>
       <div className="analytics-product-grid"><section className="admin-card"><div className="admin-card__header"><div><span className="eyebrow">INTERESSE × VENDA</span><h2>Produtos com maior interesse</h2></div><Eye size={21}/></div>{report.topProducts.length?<div className="analytics-product-list">{report.topProducts.map((product)=><div key={product.productId}><div><strong>{product.name}</strong><span>{product.views} visualizações · {product.addToCartSessions} sessões no carrinho</span></div><b>{product.soldUnits} vendidos</b></div>)}</div>:<p className="analytics-empty">Os dados aparecerão conforme clientes navegarem na vitrine.</p>}</section><section className="admin-card"><div className="admin-card__header"><div><span className="eyebrow">OPORTUNIDADE</span><h2>Vistos, mas ainda não vendidos</h2></div><BarChart3 size={21}/></div>{report.viewedNotSold.length?<div className="analytics-product-list">{report.viewedNotSold.map((product)=><div key={product.productId}><div><strong>{product.name}</strong><span>{product.views} visualizações · {product.addToCartSessions} sessões no carrinho</span></div><b>0 vendidos</b></div>)}</div>:<p className="analytics-empty">Nenhuma oportunidade relevante detectada neste período.</p>}</section></div>
     </>}
 

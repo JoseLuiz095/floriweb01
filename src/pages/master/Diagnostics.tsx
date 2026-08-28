@@ -54,12 +54,14 @@ export default function MasterDiagnostics(){
     {label:'Vínculos de usuários',value:numberLabel(result.users),ok:result.users>=0},
     {label:'Produtos',value:numberLabel(result.products),ok:result.products>=0},
     {label:'Pedidos',value:numberLabel(result.orders),ok:result.orders>=0},
-    {label:'Eventos anônimos',value:numberLabel(result.analyticsEvents||0),ok:true},
+    {label:'Analytics de conversão',value:result.analyticsReady?'Ativo':'Verificar',ok:Boolean(result.analyticsReady)},
+    {label:'Eventos de navegação',value:numberLabel(result.analyticsEvents||0),ok:Boolean(result.analyticsReady)},
     {label:'Áreas de entrega',value:numberLabel(result.deliveryZones),ok:result.deliveryZones>=0},
     {label:'Domínios personalizados',value:numberLabel(result.domains),ok:result.domains>=0},
+    {label:'Oferta de novas Demos',value:result.demoEnabled===false?'Desabilitada':'Habilitada',ok:true},
     {label:'Demos em andamento',value:numberLabel(result.demoTrials||0),ok:true},
     {label:'Demos próximas do vencimento',value:numberLabel(result.demoTrialsExpiringSoon||0),ok:true},
-    {label:'Agendamento automático da Demo',value:result.demoCronScheduled?'Ativo':'Verificar',ok:Boolean(result.demoCronScheduled)},
+    {label:'Agendamento automático da Demo',value:result.demoCronScheduled?`Ativo${result.demoCronSchedule?` · ${result.demoCronSchedule}`:''}`:(result.demoCronExists?'Inativo':'Verificar'),ok:Boolean(result.demoCronScheduled)},
   ]:[],[result]);
 
   return <>
@@ -91,7 +93,7 @@ export default function MasterDiagnostics(){
     </section>
 
     {result&&<>
-      <section className="admin-card diagnostic-summary"><div className="diagnostic-version"><ShieldCheck size={23}/><div><span className="eyebrow">BANCO CONECTADO</span><strong>Frontend 3.0.0 RC3 · Banco {result.version}</strong></div></div><div className="diagnostic-badges"><span><Store size={16}/>{result.storesOnline} online</span><span><Database size={16}/>{result.orders} pedidos</span>{result.demoDurationDays&&<span>{result.demoDurationDays} dias de Demo</span>}</div></section>
+      <section className="admin-card diagnostic-summary"><div className="diagnostic-version"><ShieldCheck size={23}/><div><span className="eyebrow">BANCO CONECTADO</span><strong>Frontend 3.0.0 RC5.2 · Banco {result.version}</strong></div></div><div className="diagnostic-badges"><span><Store size={16}/>{result.storesOnline} online</span><span><Database size={16}/>{result.orders} pedidos</span>{result.demoEnabled===false?<span>Demo desabilitada</span>:result.demoDurationDays&&<span>{result.demoDurationDays} dias de Demo</span>}</div></section>
       <div className="diagnostic-grid">{checks.map((item)=><article className="admin-card diagnostic-check" key={item.label}><span className={item.ok?'diagnostic-ok':'diagnostic-fail'}>{item.ok?<CheckCircle2 size={18}/>:<TriangleAlert size={18}/>}</span><div><small>{item.label}</small><strong>{item.value}</strong></div></article>)}</div>
       <section className="admin-card master-guidance"><span className="eyebrow">TESTE DE VENDA</span><h2>Fluxo mínimo antes de liberar para cliente</h2><p>Crie uma loja, acesse com o responsável, publique produto, faça um pedido real de teste, abra o WhatsApp e confirme que Analytics registra o funil sem dados pessoais.</p></section>
     </>}

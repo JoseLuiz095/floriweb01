@@ -11,7 +11,7 @@ import type {
 } from '../types';
 
 const toNumber = (value: number | string | null | undefined) => value == null ? 0 : Number(value);
-const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = { demoDurationDays: 30, demoWarningDays: 7 };
+const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = { demoEnabled: true, demoDurationDays: 30, demoWarningDays: 7 };
 
 const addDaysIso = (days: number) => {
   const date = new Date();
@@ -32,7 +32,7 @@ type PlanRow = { id:string; code:string; name:string; product_limit:number|null;
 type SubscriptionRow = { id:string; store_id:string; plan_id:string; status:'trial'|'active'|'suspended'|'cancelled'; status_before_suspension:'trial'|'active'|null; started_at:string; expires_at:string|null; billing_amount:number|string|null; due_day:number|null; next_due_date:string|null };
 type DomainRow = { id:string; store_id:string; domain:string; is_primary:boolean; active:boolean };
 type CountRow = { id:string; store_id:string; active?:boolean };
-type PlatformSettingsRow = { id:number; demo_duration_days:number; demo_warning_days:number };
+type PlatformSettingsRow = { id:number; demo_enabled?:boolean; demo_duration_days:number; demo_warning_days:number };
 
 const mapPlan = (row: PlanRow): Plan => ({
   id:row.id, code:row.code, name:row.name, productLimit:row.product_limit, imageLimitPerProduct:row.image_limit_per_product,
@@ -42,6 +42,7 @@ const mapPlan = (row: PlanRow): Plan => ({
 });
 
 const mapPlatformSettings = (row?: PlatformSettingsRow): PlatformSettings => row ? {
+  demoEnabled: row.demo_enabled !== false,
   demoDurationDays: row.demo_duration_days,
   demoWarningDays: row.demo_warning_days,
 } : DEFAULT_PLATFORM_SETTINGS;
@@ -97,13 +98,14 @@ export const platformApi = {
 
   async savePlatformSettings(settings: PlatformSettings): Promise<PlatformSettings> {
     const normalized: PlatformSettings = {
+      demoEnabled: settings.demoEnabled !== false,
       demoDurationDays: Math.max(1, Math.min(365, Math.round(settings.demoDurationDays))),
       demoWarningDays: Math.max(1, Math.min(Math.max(1, Math.round(settings.demoDurationDays) - 1), Math.round(settings.demoWarningDays))),
     };
     if (isDemoMode) return normalized;
     const rows = await restFetch<PlatformSettingsRow[]>('platform_settings?id=eq.1&select=*', {
       method:'PATCH',
-      body:{demo_duration_days:normalized.demoDurationDays,demo_warning_days:normalized.demoWarningDays},
+      body:{demo_enabled:normalized.demoEnabled,demo_duration_days:normalized.demoDurationDays,demo_warning_days:normalized.demoWarningDays},
       prefer:'return=representation',
     });
     return mapPlatformSettings(rows[0]);
@@ -169,6 +171,9 @@ export const platformApi = {
     const planChanged = currentSub?.plan_id !== input.planId;
     const isDemo = plan.code === 'DEMO';
     const settings = isDemo ? await platformApi.getPlatformSettings() : DEFAULT_PLATFORM_SETTINGS;
+    if (isDemo && !settings.demoEnabled && planChanged) {
+      throw new Error('O acesso Demo está desabilitado no Admin Master. Habilite a Demo em Planos antes de atribuí-la a uma nova loja.');
+    }
 
     let status: SubscriptionRow['status'];
     let beforeSuspension: SubscriptionRow['status_before_suspension'] = null;
@@ -220,7 +225,7 @@ export const platformApi = {
   },
 
   async systemCheck(): Promise<PlatformSystemCheck> {
-    if (isDemoMode) return {version:'3.0.0-rc.2-demo',platformAdmin:true,stores:1,storesOnline:1,storesSuspended:0,plans:4,subscriptions:1,users:1,products:8,orders:0,deliveryZones:31,domains:0,demoTrials:1,demoTrialsExpiringSoon:0,demoDurationDays:30,demoWarningDays:7,demoCronScheduled:true};
+    if (isDemoMode) return {version:'3.0.0-rc.5.2-demo',platformAdmin:true,stores:1,storesOnline:1,storesSuspended:0,plans:4,subscriptions:1,users:1,products:8,orders:0,deliveryZones:31,domains:0,analyticsEvents:0,analyticsReady:true,demoEnabled:true,demoTrials:1,demoTrialsExpiringSoon:0,demoDurationDays:30,demoWarningDays:7,demoCronScheduled:true,demoCronExists:true,demoCronActive:true,demoCronSchedule:'15 * * * *'};
     return restFetch<PlatformSystemCheck>('rpc/platform_system_check', {method:'POST', body:{}});
   },
 

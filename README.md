@@ -1,4 +1,4 @@
-# FloriWeb V3.0.0 RC5
+# FloriWeb V3.0.0 RC5.1
 
 Candidato final de homologação comercial. Mantém o backend da RC2/RC4 e adiciona revisão final de UX, confiabilidade visual do fluxo de pedidos e testes críticos.
 
@@ -9,7 +9,9 @@ npm install
 npm run validate
 ```
 
-A RC5 **não exige SQL novo nem redeploy das Edge Functions**. Após o build, publique apenas o frontend no Cloudflare. Consulte `TESTES_MANUAIS_V3_RC5.md` antes da liberação comercial.
+A RC5.1 adiciona uma regra funcional para produtos **sob encomenda**. Ela exige aplicar **um SQL incremental** no Supabase e publicar o frontend; **não exige redeploy das Edge Functions**.
+
+A data mínima do pedido passa a considerar o maior `production_days` entre os produtos sob encomenda do carrinho. O frontend bloqueia datas anteriores e o banco repete a validação para impedir bypass. Consulte `TESTES_MANUAIS_V3_RC5_1_ENCOMENDA.md` antes da liberação comercial.
 
 # FloriWeb V3.0.0 RC4
 
@@ -253,3 +255,10 @@ Consulte `docs/IMPECCABLE_PASSADA_COMPLETA.md`.
 
 - Analytics exige plano com `reports=true`.
 - Domínio próprio exige `custom_domain=true` e é validado no frontend, Edge Function e banco.
+
+
+## V3.0.0 RC5.2 — Demo global e Analytics
+
+A RC5.2 adiciona no Admin Master → Planos a opção de habilitar/desabilitar novas Demos e mantém configurável a duração do acesso e o aviso antecipado. Desabilitar a oferta não interrompe Demos já existentes.
+
+Também inclui um reparo idempotente do Analytics de conversão (`analytics_events`, `track_public_event_v3` e `get_store_analytics_v3`) e força a recarga do schema cache do PostgREST. A aplicação deve ser feita pelo arquivo `supabase/releases/20260828_v3_rc5_2_bundle.sql`, seguida de `supabase/tests/VALIDAR_V3_RC5_2.sql`.

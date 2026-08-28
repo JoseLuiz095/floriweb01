@@ -1,3 +1,33 @@
+# 3.0.0-rc.5.2
+
+- Admin Master agora permite habilitar/desabilitar a oferta de novas Demos sem interromper avaliações já existentes.
+- Duração da Demo e aviso antecipado permanecem configuráveis em Planos.
+- Banco impede nova atribuição ao plano Demo quando a oferta global está desabilitada.
+- Analytics V3 recebe bundle de recuperação idempotente para corrigir ausência de `get_store_analytics_v3` e `track_public_event_v3`.
+- PostgREST recebe `NOTIFY pgrst, 'reload schema'` após a instalação do módulo de Analytics.
+- Diagnóstico Master passa a informar disponibilidade da Demo, prontidão do Analytics e agenda real do cron da Demo.
+- Interface de Analytics remove a expressão técnica `Telemetria anônima · sem PII` e passa a explicar privacidade em linguagem de produto.
+
+# FloriWeb 3.0.0-rc.5.1
+
+## Produtos sob encomenda
+- Checkout calcula a primeira data permitida pelo maior `production_days` do carrinho.
+- Campo de data usa `min` dinâmico e bloqueia registro quando a data é anterior ao prazo.
+- Alerta visual mostra a primeira data disponível e o produto que determina o maior prazo.
+- Detalhe do produto informa a primeira data estimada para entrega/retirada.
+- Carrinho destaca que existem itens sob encomenda antes de o cliente iniciar o checkout.
+- Card de produto mostra o prazo em dias junto ao selo `Sob encomenda`.
+- Cadastro administrativo explica que o prazo configurado passa a ser obrigatório no checkout.
+- Banco ganhou dois triggers para proteger a regra mesmo se o frontend for contornado.
+- Fluxo Demo também rejeita data anterior ao prazo.
+
+## Implantação
+- Aplicar `supabase/releases/20260828_v3_rc5_1_made_to_order_lead_time.sql`.
+- Validar com `supabase/tests/VALIDAR_V3_RC5_1.sql`.
+- Não é necessário redeploy das Edge Functions.
+
+---
+
 # FloriWeb 3.0.0-rc.5
 
 - Revisão visual final antes da homologação comercial.

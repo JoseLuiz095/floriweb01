@@ -12,7 +12,7 @@ const trialExpired=(value?:string)=>Boolean(value)&&new Date(value as string).ge
 export default function MasterDashboard(){
   const[stats,setStats]=useState<PlatformDashboardStats|null>(null);
   const[stores,setStores]=useState<PlatformStoreSummary[]>([]);
-  const[settings,setSettings]=useState<PlatformSettings>({demoDurationDays:30,demoWarningDays:7});
+  const[settings,setSettings]=useState<PlatformSettings>({demoEnabled:true,demoDurationDays:30,demoWarningDays:7});
   const[error,setError]=useState('');
   useEffect(()=>{void Promise.all([platformApi.dashboard(),platformApi.listStores(),platformApi.getPlatformSettings()]).then(([s,storesResult,platformSettings])=>{setStats(s);setStores(storesResult);setSettings(platformSettings)}).catch((e)=>setError(e instanceof Error?e.message:'Falha ao carregar indicadores.'))},[]);
 

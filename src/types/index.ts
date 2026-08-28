@@ -153,6 +153,7 @@ export type Plan = {
 };
 
 export type PlatformSettings = {
+  demoEnabled: boolean;
   demoDurationDays: number;
   demoWarningDays: number;
 };
@@ -346,11 +347,16 @@ export type PlatformSystemCheck = {
   deliveryZones: number;
   domains: number;
   analyticsEvents?: number;
+  analyticsReady?: boolean;
+  demoEnabled?: boolean;
   demoTrials?: number;
   demoTrialsExpiringSoon?: number;
   demoDurationDays?: number;
   demoWarningDays?: number;
   demoCronScheduled?: boolean;
+  demoCronExists?: boolean;
+  demoCronActive?: boolean;
+  demoCronSchedule?: string | null;
 };
 
 export type PlatformDashboardStats = {

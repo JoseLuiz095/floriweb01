@@ -1,0 +1,187 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = process.cwd();
+const failures = [];
+const checks = [];
+const ok = (name, condition, detail='') => { checks.push({name,condition,detail}); if(!condition) failures.push(`${name}${detail?`: ${detail}`:''}`); };
+const read = (p) => fs.readFileSync(path.join(root,p),'utf8');
+const exists = (p) => fs.existsSync(path.join(root,p));
+
+const app = read('src/App.tsx');
+const auth = read('src/contexts/AuthContext.tsx');
+const platformApi = read('src/services/platformApi.ts');
+const storeApi = read('src/services/storeApi.ts');
+const storeLayout = read('src/layouts/StoreLayout.tsx');
+const masterDashboard = read('src/pages/master/Dashboard.tsx');
+const masterPlans = read('src/pages/master/Plans.tsx');
+const masterDiagnostics = read('src/pages/master/Diagnostics.tsx');
+const stores = read('src/pages/master/Stores.tsx');
+const adminLayout = read('src/layouts/AdminLayout.tsx');
+const analytics = read('src/pages/admin/Analytics.tsx');
+const analyticsApi = read('src/services/analyticsApi.ts');
+const checkout = read('src/pages/store/Checkout.tsx');
+const firstAccess = read('src/pages/admin/FirstAccessPassword.tsx');
+const onboarding = read('src/pages/admin/Onboarding.tsx');
+const home = read('src/pages/store/Home.tsx');
+const readiness = read('src/utils/storeReadiness.ts');
+const emailUtils = read('src/utils/email.ts');
+const edge = read('supabase/functions/platform-create-store/index.ts');
+const publicCheckoutEdge = read('supabase/functions/public-checkout/index.ts');
+const m010 = read('supabase/migrations/202608260010_demo_trial_credentials_storefront.sql');
+const m100 = read('supabase/migrations/202608270100_v3_security_baseline.sql');
+const m110 = read('supabase/migrations/202608270110_v3_public_storefront_rpc.sql');
+const m115 = read('supabase/migrations/202608270115_v3_public_order_rate_limit.sql');
+const m120 = read('supabase/migrations/202608270120_v3_checkout_hardening.sql');
+const m125 = read('supabase/migrations/202608270125_v3_plan_entitlements.sql');
+const m130 = read('supabase/migrations/202608270130_v3_analytics_events.sql');
+const m140 = read('supabase/migrations/202608270140_v3_checkout_edge_turnstile.sql');
+const m145 = read('supabase/migrations/202608270145_v3_checkout_idempotency.sql');
+const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
+const mMadeToOrder = read('supabase/migrations/202608280100_v3_made_to_order_lead_time.sql');
+const mRc52 = read('supabase/migrations/202608280200_v3_rc5_2_demo_analytics.sql');
+const packageJson = JSON.parse(read('package.json'));
+
+ok('Versao V3 RC5.2', packageJson.version === '3.0.0-rc.5.2');
+ok('Rota primeiro acesso', app.includes('path="/admin/primeiro-acesso"'));
+ok('Primeiro acesso forca troca', app.includes('membership.mustChangePassword'));
+ok('Auth carrega must_change_password', auth.includes('must_change_password') && auth.includes('mustChangePassword'));
+ok('Primeiro acesso altera senha', firstAccess.includes('completeTemporaryPasswordChange'));
+ok('Primeiro acesso direciona onboarding', firstAccess.includes("navigate('/admin/primeiros-passos'"));
+ok('Rota onboarding comercial', app.includes('path="/admin/primeiros-passos"') && exists('src/pages/admin/Onboarding.tsx'));
+ok('Onboarding centraliza prontidao comercial', onboarding.includes('getStoreReadiness') && readiness.includes('launchReady'));
+ok('Onboarding possui teste e divulgacao', onboarding.includes('Fazer pedido de teste') && onboarding.includes('Divulgue sua loja'));
+ok('StoreContext importa useCallback', read('src/contexts/StoreContext.tsx').includes('useCallback'));
+ok('Senha consistente em 10 caracteres', read('src/components/admin/PasswordChangeCard.tsx').includes('temporaryPasswordValidationMessage') && read('src/pages/admin/ResetPassword.tsx').includes('temporaryPasswordValidationMessage'));
+ok('E-mail bloqueia dominio teste', emailUtils.includes("'teste.com'") && edge.includes("'teste.com'"));
+ok('E-mail bloqueia temporarios', emailUtils.includes("'mailinator.com'") && edge.includes("'mailinator.com'"));
+ok('Edge valida dominio de e-mail por MX', edge.includes('cloudflare-dns.com/dns-query') && edge.includes('type=MX'));
+ok('Typos comuns de e-mail sao sinalizados', emailUtils.includes("'gmial.com': 'gmail.com'") && edge.includes("'gmial.com': 'gmail.com'"));
+ok('Criacao permite senha temporaria', stores.includes('temporary_password') && edge.includes('temporary_password'));
+ok('Senha temporaria forte', emailUtils.includes('pelo menos 10') && edge.includes('pelo menos 10'));
+ok('Usuario existente nao tem senha sobrescrita', edge.includes('A senha existente foi preservada'));
+ok('Plano Demo configuravel', masterPlans.includes('demoEnabled') && masterPlans.includes('demoDurationDays') && masterPlans.includes('demoWarningDays'));
+ok('Oferta Demo pode ser desabilitada', masterPlans.includes('Disponibilidade') && stores.includes('Novas Demos estão desabilitadas') && platformApi.includes('!settings.demoEnabled'));
+ok('Banco bloqueia nova Demo quando desabilitada', mRc52.includes('store_subscriptions_demo_availability_trg') && mRc52.includes('enforce_demo_plan_availability'));
+ok('Dashboard Master orientado a conversao', masterDashboard.includes('Demonstrações próximas do vencimento') && masterDashboard.includes('Clientes pagantes') && masterDashboard.includes('MRR estimado'));
+ok('Tabela mostra vencimento Demo', stores.includes('Demo vence em'));
+ok('Migration cria platform_settings', m010.includes('create table if not exists public.platform_settings'));
+ok('Migration cria must_change_password', m010.includes('must_change_password'));
+ok('Migration cria expiracao automatica', m010.includes('platform_expire_demo_trials'));
+ok('Migration tenta agendar pg_cron', m010.includes('floriweb-expire-demo-trials'));
+ok('Acesso verifica Demo vencida', m010.includes('store_accessible'));
+ok('Vitrine neutra usa RPC segura', m010.includes('resolve_storefront_status') && storeApi.includes('resolve_storefront_status'));
+ok('Pagina indisponivel nao cita inadimplencia', storeLayout.toLowerCase().includes('temporariamente indisponível') && !storeLayout.toLowerCase().includes('mensalidade'));
+ok('Suspensao preserva dados', !platformApi.includes("active:input.accessStatus==='online'"));
+ok('Edge Function Master versao V3 RC2', edge.includes("version: '3.0.0-rc.2'"));
+ok('Cloudflare Worker sem _redirects conflitante', !exists('public/_redirects'));
+
+ok('Supabase JS oficial configurado', exists('src/lib/supabase.ts') && read('src/lib/supabase.ts').includes("from '@supabase/supabase-js'") && auth.includes('auth.signInWithPassword'));
+ok('Logout real Supabase', auth.includes('auth.signOut'));
+ok('Multi-loja carrega todos os vinculos', auth.includes('memberships') && auth.includes('selectStore'));
+ok('MFA Master AAL2 no app', app.includes("mfaLevel !== 'aal2'") && exists('src/pages/master/Mfa.tsx'));
+ok('MFA Master AAL2 na Edge Function', edge.includes('MFA_AAL2_REQUIRED') && edge.includes('getAuthenticatorAssuranceLevel'));
+ok('MFA Master AAL2 no banco', m100.includes("auth.jwt()->>'aal'") && m100.includes("= 'aal2'"));
+ok('Policy publica de produtos corrige isolamento', m100.includes('c.store_id = products.store_id') && m100.includes('products.category_id'));
+ok('Storage metadata e escrita isolados por loja', m100.includes('floriweb_storage_public_read') && m100.includes('public.store_accessible(s.id)') && m100.includes('is_store_admin'));
+ok('RPC consolidada da vitrine criada', m110.includes('get_public_storefront_v3') && storeApi.includes('rpc/get_public_storefront_v3'));
+ok('RPC consolidada retorna colecoes publicas', ['categories','products','product_images','product_variants','addons','product_addons','delivery_zones'].every((key)=>m110.includes(`'${key}'`)));
+ok('Rate limit publico sem IP bruto', m115.includes('public_order_rate_limits') && m115.includes('md5(v_ip') && !m115.includes(' ip inet'));
+ok('Rate limit possui retencao curta', m115.includes("interval '10 minutes'") && m115.includes("interval '24 hours'"));
+ok('Checkout chama rate limit no servidor', m120.includes('enforce_public_order_rate_limit(v_store.id)'));
+ok('Checkout valida loja antes de processar', m120.includes('public.store_accessible(s.id)'));
+ok('Checkout limita payload e itens', m120.includes('octet_length(payload::text) > 60000') && m120.includes("jsonb_array_length(payload->'items') > 50"));
+ok('Checkout bloqueia adicional duplicado', m120.includes('v_seen_addon_ids') && m120.includes('array_append'));
+ok('Dominio proprio protegido pelo plano no banco', m125.includes('store_plan_allows_custom_domain') && m125.includes('store_domains_plan_entitlement_trg'));
+ok('Downgrade desativa dominio proprio', m125.includes('store_subscriptions_domain_entitlement_trg') && m125.includes('set active = false'));
+ok('Edge Master bloqueia dominio fora do plano', edge.includes('custom_domain') && edge.includes('não inclui domínio próprio'));
+ok('Master bloqueia campo de dominio por plano', stores.includes('selectedCreatePlan?.customDomain') && stores.includes('selectedEditPlan?.customDomain'));
+ok('API Master remove dominio no downgrade', platformApi.includes('plan.custom_domain ?'));
+ok('Analytics respeita recurso reports do plano', adminLayout.includes('requiresReports') && adminLayout.includes('planUsage.plan.reports') && analytics.includes('!planUsage.plan.reports'));
+
+ok('Analytics RC2 possui tabela e RPCs', m130.includes('create table if not exists public.analytics_events') && m130.includes('track_public_event_v3') && m130.includes('get_store_analytics_v3'));
+ok('RC5.2 recupera Analytics e recarrega schema cache', mRc52.includes('get_store_analytics_v3') && mRc52.includes("notify pgrst, 'reload schema'"));
+ok('Analytics usa explicacao de privacidade legivel', analytics.includes('Privacidade das métricas') && !analytics.includes('sem PII'));
+const analyticsTableDdl = (m130.match(/create table if not exists public\.analytics_events \([\s\S]*?\n\);/)||[''])[0];
+ok('Analytics sem PII no schema', analyticsTableDdl.length>0 && !/customer_|phone|email|address|card_message|notes|ip_address/i.test(analyticsTableDdl));
+ok('Telemetria usa sessao anonima', analyticsApi.includes('floriweb_analytics_session_v3') && analyticsApi.includes('crypto.randomUUID'));
+ok('Eventos do funil conectados', read('src/pages/store/Home.tsx').includes("'storefront_view'") && read('src/pages/store/ProductDetail.tsx').includes("'product_view'") && read('src/pages/store/ProductDetail.tsx').includes("'add_to_cart'") && checkout.includes("'checkout_started'"));
+ok('Analytics mostra funil e oportunidades', analytics.includes('Conversão vitrine → pedido') && analytics.includes('Vistos, mas ainda não vendidos'));
+
+ok('Checkout usa Edge Function publica', storeApi.includes("'public-checkout'") && storeApi.includes('invokePublicFunction') && !storeApi.includes("restFetch<CreateOrderRpcRow[]>('rpc/create_public_order'"));
+ok('Public checkout versao RC2', publicCheckoutEdge.includes("version: '3.0.0-rc.2'"));
+ok('Public checkout valida Turnstile server-side', publicCheckoutEdge.includes('turnstile/v0/siteverify') && publicCheckoutEdge.includes("result.action !== 'checkout'") && publicCheckoutEdge.includes('result.hostname'));
+ok('Public checkout valida dominio Premium ativo', publicCheckoutEdge.includes("from('store_domains')") && publicCheckoutEdge.includes(".eq('active', true)"));
+const publicInvokeBlock = read('src/lib/supabaseRest.ts').slice(read('src/lib/supabaseRest.ts').indexOf('export const invokePublicFunction'), read('src/lib/supabaseRest.ts').indexOf('export const invokeFunction'));
+ok('Publishable key publica nao e tratada como JWT', publicInvokeBlock.includes('apikey: appConfig.supabaseAnonKey') && !publicInvokeBlock.includes('Authorization:'));
+ok('Gateway sem JWT somente no public-checkout', exists('supabase/config.toml') && read('supabase/config.toml').includes('[functions.public-checkout]') && read('supabase/config.toml').includes('verify_jwt = false'));
+ok('RPC de pedido bloqueada para navegador', m140.includes('revoke all on function public.create_public_order(jsonb) from public, anon, authenticated') && m140.includes('grant execute on function public.create_public_order(jsonb) to service_role'));
+ok('Fingerprint explicito SHA-256 suportado no rate limit', m140.includes('x-floriweb-security-fingerprint') && publicCheckoutEdge.includes("crypto.subtle.digest('SHA-256'"));
+ok('WhatsApp alimenta analytics no servidor', m140.includes('orders_whatsapp_analytics_v3_trg') && m140.includes("'whatsapp_clicked'"));
+ok('Checkout possui idempotencia persistida', m145.includes('public_request_id') && m145.includes('orders_store_public_request_uidx') && m145.includes('orders_public_request_id_trg'));
+ok('Edge recupera pedido em replay idempotente', publicCheckoutEdge.includes('idempotentReplay') && publicCheckoutEdge.includes(".eq('public_request_id', requestId)"));
+ok('Frontend mantem requestId durante a tentativa', checkout.includes('checkoutRequestId') && storeApi.includes('requestId:security.requestId'));
+ok('Diagnostico do banco atualizado para RC2', m150.includes("'version', '3.0.0-rc.2'") && m150.includes("'analyticsEvents'"));
+ok('Diagnostico Master verifica checkout protegido', masterDiagnostics.includes('public-checkout + Turnstile') && platformApi.includes('publicCheckoutFunctionHealth'));
+ok('CSP libera host oficial do Turnstile', read('public/_headers').includes('https://challenges.cloudflare.com'));
+ok('Turnstile presente no checkout', exists('src/components/ui/TurnstileWidget.tsx') && checkout.includes('TurnstileWidget') && checkout.includes('turnstileToken'));
+ok('Checkout preserva rascunho apenas na sessao', checkout.includes('floriweb_checkout_draft_v1') && checkout.includes('sessionStorage') && checkout.includes('clearCheckoutDraft'));
+ok('Checkout nao persiste mensagens pessoais no rascunho', checkout.includes("cardMessage: ''") && checkout.includes("notes: ''"));
+ok('Storefront explica entrega pagamento e WhatsApp', home.includes('storefront-commerce-strip') && home.includes('Pedido direto') && home.includes('Pagamento'));
+ok('Admin possui navegacao agrupada RC4', adminLayout.includes('admin-nav__group') && adminLayout.includes('Operação') && adminLayout.includes('Catálogo'));
+ok('Admin exibe status e acesso rapido a vitrine', adminLayout.includes('admin-live-status') && adminLayout.includes('Abrir vitrine'));
+ok('Master possui funil de filtros comerciais', stores.includes('master-client-filters') && stores.includes('Atenção comercial') && stores.includes('Implantação'));
+ok('Storefront possui dock mobile de carrinho', storeLayout.includes('mobile-cart-dock') && storeLayout.includes('currency.format(subtotal)'));
+ok('Checkout possui CTA mobile persistente', checkout.includes('checkout-mobile-submit') && checkout.includes('submitDisabled'));
+ok('Checkout comunica politica do rascunho', checkout.includes('Proteção contra perda de preenchimento') && checkout.includes('não são armazenadas'));
+ok('Contexto visual para Codex versionado', exists('PRODUCT.md') && exists('DESIGN.md') && exists('docs/CODEX_IMPECCABLE_RC4.md'));
+ok('Pedido e salvo antes do WhatsApp', checkout.includes('O pedido é salvo no FloriWeb antes de você abrir o WhatsApp') && read('src/pages/store/OrderSuccess.tsx').includes('Salvo no FloriWeb'));
+ok('Clique WhatsApp usa keepalive', storeApi.includes('mark_public_order_whatsapp_clicked') && storeApi.includes('keepalive:true') && read('src/lib/supabaseRest.ts').includes('keepalive?: boolean'));
+ok('Pedidos possuem atualizacao automatica', read('src/pages/admin/Orders.tsx').includes('setInterval') && read('src/pages/admin/Orders.tsx').includes('visibilitychange') && read('src/pages/admin/Orders.tsx').includes("reloadAdmin({ silent:true })"));
+ok('Acessibilidade visual final', read('src/styles.css').includes(':focus-visible') && read('src/styles.css').includes('prefers-reduced-motion'));
+ok('Produto sob encomenda informa primeira data', read('src/pages/store/ProductDetail.tsx').includes('Primeira data disponível para entrega ou retirada'));
+ok('Checkout calcula data minima de encomenda', checkout.includes('madeToOrderConstraint') && checkout.includes('minimumDesiredDate') && checkout.includes('desiredDateTooEarly'));
+ok('Checkout bloqueia data abaixo do prazo', checkout.includes('min={minimumDesiredDate}') && checkout.includes('if (desiredDateTooEarly)'));
+ok('Carrinho avisa prazo de encomenda', read('src/pages/store/Cart.tsx').includes('Seu carrinho tem produto sob encomenda'));
+ok('Banco aplica prazo no item do pedido', mMadeToOrder.includes('order_items_made_to_order_lead_time_trg') && mMadeToOrder.includes('v_desired_date < v_minimum_date'));
+ok('Banco protege alteracao da data do pedido', mMadeToOrder.includes('orders_made_to_order_desired_date_trg'));
+ok('Validacao RC5.1 existe', exists('supabase/tests/VALIDAR_V3_RC5_1.sql'));
+ok('Validacao RC5.2 existe', exists('supabase/tests/VALIDAR_V3_RC5_2.sql'));
+
+
+ok('Bundle SQL RC1 preservado', exists('supabase/releases/20260827_v3_rc1_bundle.sql'));
+ok('Validacao SQL RC1 preservada', exists('supabase/tests/VALIDAR_V3_RC1.sql'));
+ok('Bundle SQL RC2 existe', exists('supabase/releases/20260827_v3_rc2_bundle.sql'));
+ok('Validacao SQL RC2 existe', exists('supabase/tests/VALIDAR_V3_RC2.sql'));
+ok('Documentacao RC2 existe', exists('docs/V3_RC2_APLICACAO.md'));
+ok('Deploy publica as duas Edge Functions', read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('functions deploy platform-create-store') && read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('functions deploy public-checkout'));
+ok('Workflow publica as duas Edge Functions', read('.github/workflows/deploy-supabase-functions.yml').includes('functions deploy platform-create-store') && read('.github/workflows/deploy-supabase-functions.yml').includes('functions deploy public-checkout'));
+ok('Deploy fixa Supabase CLI', read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('supabase@2.116.0'));
+
+ok('Code splitting React.lazy', app.includes('lazy(()=>import(') && app.includes('<Suspense'));
+ok('Wrangler SPA versionado', exists('wrangler.jsonc') && read('wrangler.jsonc').includes('single-page-application'));
+ok('Headers de seguranca Cloudflare', exists('public/_headers') && read('public/_headers').includes('Content-Security-Policy'));
+ok('Impeccable + Codex configuravel', packageJson.scripts?.['design:setup']?.includes('impeccable@3.6.0') && packageJson.scripts?.['design:verify'] && exists('AGENTS.md') && exists('INSTALAR_IMPECCABLE_CODEX.bat') && exists('RODAR_IMPECCABLE_VISUAL_COMPLETO.bat') && exists('PROMPT_CODEX_IMPECCABLE_COMPLETO.txt') && exists('.impeccable/surfaces/floriweb-completo.md'));
+ok('Dependencias sem latest', !JSON.stringify(packageJson).includes('latest'));
+ok('Diagnostico SQL tolera ausencia do historico', read('supabase/diagnostics/20260827_v3_preflight_readonly.sql').includes("to_regclass('supabase_migrations.schema_migrations')") && !read('supabase/diagnostics/20260827_v3_preflight_readonly.sql').includes('from supabase_migrations.schema_migrations'));
+ok('Impeccable restrito ao visual', read('AGENTS.md').includes('exclusivo para refinamento visual/UX') && read('AGENTS.md').includes('$impeccable') && read('docs/IMPECCABLE_CODEX.md').includes('supabase/**'));
+
+const sourceFiles=[];
+const walk=(dir)=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory())walk(full);else if(/\.(ts|tsx)$/.test(entry.name))sourceFiles.push(full)}};
+walk(path.join(root,'src'));
+for(const file of sourceFiles){
+  const text=fs.readFileSync(file,'utf8');
+  for(const match of text.matchAll(/from\s+['"](\.[^'"]+)['"]/g)){
+    const target=path.resolve(path.dirname(file),match[1]);
+    const candidates=[target,`${target}.ts`,`${target}.tsx`,`${target}.js`,path.join(target,'index.ts'),path.join(target,'index.tsx')];
+    if(!candidates.some(fs.existsSync)) failures.push(`Import relativo inexistente em ${path.relative(root,file)}: ${match[1]}`);
+  }
+}
+
+const css=read('src/styles.css');
+const open=(css.match(/\{/g)||[]).length, close=(css.match(/\}/g)||[]).length;
+ok('CSS com chaves balanceadas', open===close, `${open} abre / ${close} fecha`);
+
+for(const c of checks) console.log(`${c.condition?'OK ':'FAIL'} ${c.name}${c.detail?` - ${c.detail}`:''}`);
+if(failures.length){console.error(`\n${failures.length} falha(s):`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
+console.log(`\nSmoke test concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
