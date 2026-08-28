@@ -29,7 +29,7 @@ import { SupabaseHttpError } from '../../lib/supabaseRest';
 import { getAnalyticsSessionId, trackPublicEvent } from '../../services/analyticsApi';
 import { lookupCep } from '../../services/cepApi';
 import type { CheckoutData, DeliveryZone, OrderConfirmation, PaymentMethod } from '../../types';
-import { currency, sanitizeWhatsAppNumber, todayLocalISO } from '../../utils/format';
+import { addDaysLocalISO, currency, formatDateBR, sanitizeWhatsAppNumber, todayLocalISO } from '../../utils/format';
 import { saveOrderConfirmation } from '../../utils/orderConfirmation';
 import { buildPixCopyPasteWithAmount } from '../../utils/pix';
 import { normalizeText } from '../../utils/text';
@@ -183,7 +183,7 @@ const paymentLabels: Record<PaymentMethod, { title: string; description: string 
 
 export default function Checkout() {
   const { items, subtotal, clear } = useCart();
-  const { settings, deliveryZones, registerOrder, loading, error, reloadPublic, storeBasePath } = useStore();
+  const { settings, products, deliveryZones, registerOrder, loading, error, reloadPublic, storeBasePath } = useStore();
   const { showToast } = useToast();
   const [sending, setSending] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
@@ -262,6 +262,27 @@ export default function Checkout() {
     () => activeDeliveryZones.find((zone) => zone.id === form.deliveryZoneId),
     [activeDeliveryZones, form.deliveryZoneId],
   );
+
+  const madeToOrderConstraint = useMemo(() => {
+    const cartProducts = items
+      .map((item) => products.find((product) => product.id === item.productId))
+      .filter((product): product is NonNullable<typeof product> => Boolean(product?.madeToOrder && product.productionDays > 0));
+    if (!cartProducts.length) return null;
+    const productionDays = cartProducts.reduce((max, product) => Math.max(max, product.productionDays), 0);
+    const limitingProducts = cartProducts.filter((product) => product.productionDays === productionDays);
+    return {
+      productionDays,
+      minimumDate: addDaysLocalISO(productionDays),
+      productNames: limitingProducts.map((product) => product.name),
+    };
+  }, [items, products]);
+
+  const minimumDesiredDate = madeToOrderConstraint?.minimumDate || todayLocalISO();
+  const desiredDateTooEarly = Boolean(form.desiredDate && form.desiredDate < minimumDesiredDate);
+  const productionDateMessage = madeToOrderConstraint
+    ? `Este pedido possui produto sob encomenda. Escolha ${formatDateBR(madeToOrderConstraint.minimumDate)} ou uma data posterior, respeitando o prazo de ${madeToOrderConstraint.productionDays} ${madeToOrderConstraint.productionDays === 1 ? 'dia' : 'dias'}${madeToOrderConstraint.productNames.length ? ` de ${madeToOrderConstraint.productNames.join(', ')}` : ''}.`
+    : '';
+
   const deliveryFee = form.fulfillment === 'delivery' ? selectedZone?.fee ?? 0 : 0;
   const orderTotal = subtotal + deliveryFee;
 
@@ -346,6 +367,13 @@ export default function Checkout() {
   const update = <K extends keyof CheckoutData>(key: K, value: CheckoutData[K]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
+  const updateDesiredDate = (value: string) => {
+    update('desiredDate', value);
+    if (value && value < minimumDesiredDate) {
+      showToast(productionDateMessage || `Escolha ${formatDateBR(minimumDesiredDate)} ou uma data posterior.`, 'error');
+    }
+  };
+
   const selectZone = (zoneId: string) => {
     const zone = activeDeliveryZones.find((item) => item.id === zoneId);
     setForm((current) => ({
@@ -371,6 +399,16 @@ export default function Checkout() {
 
     if (sanitizeWhatsAppNumber(settings.whatsapp).length < 10) {
       showToast('O WhatsApp da floricultura ainda não foi configurado corretamente.', 'error');
+      return;
+    }
+
+    if (!form.desiredDate) {
+      showToast('Selecione a data desejada para o pedido.', 'error');
+      return;
+    }
+
+    if (desiredDateTooEarly) {
+      showToast(productionDateMessage || `Escolha ${formatDateBR(minimumDesiredDate)} ou uma data posterior.`, 'error');
       return;
     }
 
@@ -478,7 +516,7 @@ export default function Checkout() {
     }
   };
 
-  const submitDisabled = sending || !form.reviewConfirmed || (appConfig.turnstileSiteKey ? !turnstileToken : false) || (form.fulfillment === 'delivery' && !selectedZone);
+  const submitDisabled = sending || !form.reviewConfirmed || !form.desiredDate || desiredDateTooEarly || (appConfig.turnstileSiteKey ? !turnstileToken : false) || (form.fulfillment === 'delivery' && !selectedZone);
 
   const renderPaymentMethod = (method: PaymentMethod) => {
     const selected = form.paymentMethod === method;
@@ -571,7 +609,8 @@ export default function Checkout() {
               <div><small>ETAPA 3</small><h2>Data e horário</h2><p>Informe quando você gostaria que o pedido fosse entregue ou retirado.</p></div>
             </div>
             <div className="checkout-form-grid">
-              <label className="field"><span>Data desejada *</span><div className="field-control"><CalendarDays size={17} /><input type="date" required min={todayLocalISO()} value={form.desiredDate} onChange={(e) => update('desiredDate', e.target.value)} /></div></label>
+              {madeToOrderConstraint && <div className="production-date-notice field--full"><Clock3 size={18}/><div><strong>Produto sob encomenda</strong><span>A primeira data disponível para este carrinho é <b>{formatDateBR(madeToOrderConstraint.minimumDate)}</b>. O prazo considerado é de {madeToOrderConstraint.productionDays} {madeToOrderConstraint.productionDays===1?'dia':'dias'}{madeToOrderConstraint.productNames.length ? ` para ${madeToOrderConstraint.productNames.join(', ')}` : ''}. Datas anteriores não podem ser utilizadas.</span></div></div>}
+              <label className={`field ${desiredDateTooEarly ? 'field--invalid' : ''}`}><span>Data desejada *</span><div className="field-control"><CalendarDays size={17} /><input type="date" required min={minimumDesiredDate} value={form.desiredDate} aria-invalid={desiredDateTooEarly} onChange={(e) => updateDesiredDate(e.target.value)} /></div>{desiredDateTooEarly && <small className="field-error-message"><AlertCircle size={14}/>Data indisponível. Escolha {formatDateBR(minimumDesiredDate)} ou uma data posterior.</small>}</label>
               <label className="field"><span>Período</span><div className="field-control"><Clock3 size={17} /><select value={form.timeWindow} onChange={(e) => update('timeWindow', e.target.value)}><option value="">A combinar com a loja</option><option>Manhã</option><option>Tarde</option><option>Noite</option></select></div></label>
             </div>
           </section>

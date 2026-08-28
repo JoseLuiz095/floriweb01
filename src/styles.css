@@ -827,3 +827,17 @@ button:disabled{cursor:not-allowed}button[aria-busy="true"]{cursor:progress}.che
 .orders-toolbar{gap:16px}.orders-toolbar__sync{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.orders-toolbar__sync>span{font-weight:780;color:var(--ink)}.orders-toolbar__sync>small{color:var(--muted);white-space:nowrap}.orders-toolbar__sync .compact-button{min-height:36px;padding-inline:11px}
 @media(max-width:760px){.orders-toolbar{align-items:stretch!important;flex-direction:column}.orders-toolbar .admin-search{width:100%;max-width:none}.orders-toolbar__sync{justify-content:space-between}.orders-toolbar__sync>small{order:3;width:100%}.order-registration-proof{margin-top:-8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* RC5.1 - disponibilidade de produtos sob encomenda */
+.made-to-order-cart-warning,.production-date-notice{display:flex;align-items:flex-start;gap:11px;background:#fff8e9;border:1px solid #efd8a5;border-radius:13px;padding:13px 14px;color:#76580d}
+.made-to-order-cart-warning{margin:0 0 16px}
+.made-to-order-cart-warning>svg,.production-date-notice>svg{flex:0 0 auto;margin-top:1px;color:#9a6710}
+.made-to-order-cart-warning strong,.made-to-order-cart-warning span,.production-date-notice strong,.production-date-notice span{display:block}
+.made-to-order-cart-warning strong,.production-date-notice strong{color:#5e470d;font-size:.8rem;margin-bottom:3px}
+.made-to-order-cart-warning span,.production-date-notice span{font-size:.72rem;line-height:1.5}
+.production-date-notice b,.made-to-order-cart-warning b{color:#5e470d}
+.field--invalid .field-control,.field--invalid>input,.field--invalid>select,.field--invalid>textarea{border-color:#d65b50!important;box-shadow:0 0 0 3px rgba(180,35,24,.07)}
+.field-error-message{display:flex!important;align-items:center;gap:5px;color:#b42318!important;font-size:.68rem!important;font-weight:700!important;line-height:1.4;padding-left:2px!important}
+.field-help{display:block;margin-top:6px;color:var(--muted);font-size:.68rem;line-height:1.45;font-weight:500}
+@media (max-width:700px){.made-to-order-cart-warning,.production-date-notice{padding:12px}.made-to-order-cart-warning span,.production-date-notice span{font-size:.69rem}}
+

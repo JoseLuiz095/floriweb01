@@ -38,9 +38,10 @@ const m130 = read('supabase/migrations/202608270130_v3_analytics_events.sql');
 const m140 = read('supabase/migrations/202608270140_v3_checkout_edge_turnstile.sql');
 const m145 = read('supabase/migrations/202608270145_v3_checkout_idempotency.sql');
 const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
+const mMadeToOrder = read('supabase/migrations/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC5', packageJson.version === '3.0.0-rc.5');
+ok('Versao V3 RC5.1', packageJson.version === '3.0.0-rc.5.1');
 ok('Rota primeiro acesso', app.includes('path="/admin/primeiro-acesso"'));
 ok('Primeiro acesso forca troca', app.includes('membership.mustChangePassword'));
 ok('Auth carrega must_change_password', auth.includes('must_change_password') && auth.includes('mustChangePassword'));
@@ -133,6 +134,13 @@ ok('Pedido e salvo antes do WhatsApp', checkout.includes('O pedido é salvo no F
 ok('Clique WhatsApp usa keepalive', storeApi.includes('mark_public_order_whatsapp_clicked') && storeApi.includes('keepalive:true') && read('src/lib/supabaseRest.ts').includes('keepalive?: boolean'));
 ok('Pedidos possuem atualizacao automatica', read('src/pages/admin/Orders.tsx').includes('setInterval') && read('src/pages/admin/Orders.tsx').includes('visibilitychange') && read('src/pages/admin/Orders.tsx').includes("reloadAdmin({ silent:true })"));
 ok('Acessibilidade visual final', read('src/styles.css').includes(':focus-visible') && read('src/styles.css').includes('prefers-reduced-motion'));
+ok('Produto sob encomenda informa primeira data', read('src/pages/store/ProductDetail.tsx').includes('Primeira data disponível para entrega ou retirada'));
+ok('Checkout calcula data minima de encomenda', checkout.includes('madeToOrderConstraint') && checkout.includes('minimumDesiredDate') && checkout.includes('desiredDateTooEarly'));
+ok('Checkout bloqueia data abaixo do prazo', checkout.includes('min={minimumDesiredDate}') && checkout.includes('if (desiredDateTooEarly)'));
+ok('Carrinho avisa prazo de encomenda', read('src/pages/store/Cart.tsx').includes('Seu carrinho tem produto sob encomenda'));
+ok('Banco aplica prazo no item do pedido', mMadeToOrder.includes('order_items_made_to_order_lead_time_trg') && mMadeToOrder.includes('v_desired_date < v_minimum_date'));
+ok('Banco protege alteracao da data do pedido', mMadeToOrder.includes('orders_made_to_order_desired_date_trg'));
+ok('Validacao RC5.1 existe', exists('supabase/tests/VALIDAR_V3_RC5_1.sql'));
 
 
 ok('Bundle SQL RC1 preservado', exists('supabase/releases/20260827_v3_rc1_bundle.sql'));

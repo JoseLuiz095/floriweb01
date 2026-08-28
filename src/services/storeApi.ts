@@ -2,7 +2,7 @@ import { appConfig, isDemoMode } from '../lib/config';
 import { invokePublicFunction, restFetch, storageDelete, storageUpload, SupabaseHttpError } from '../lib/supabaseRest';
 import { seedAddons, seedCategories, seedDeliveryZones, seedOrders, seedPlan, seedProducts, seedSettings } from '../data/seed';
 import type { Addon, CartItem, Category, CheckoutData, CheckoutSecurityContext, CreateOrderResult, DeliveryZone, Order, PaymentMethod, Plan, PlanUsage, Product, ProductImage, StoreSettings } from '../types';
-import { roundMoney, slugify } from '../utils/format';
+import { addDaysLocalISO, formatDateBR, roundMoney, slugify } from '../utils/format';
 import { formatOpeningSchedule, normalizeOpeningSchedule } from '../utils/storeHours';
 import { createId } from '../utils/id';
 
@@ -414,6 +414,9 @@ export const storeApi = {
       const id=createId();
       const orderNumber=Math.max(28623,...db.orders.map(order=>order.orderNumber||0))+1;
       if(!form.reviewConfirmed)throw new Error('Confirme que revisou os dados do pedido.');
+      const madeToOrderItems=items.map((item)=>db.products.find((product)=>product.id===item.productId)).filter((product):product is Product=>Boolean(product?.madeToOrder&&product.productionDays>0));
+      const maxProductionDays=madeToOrderItems.reduce((max,product)=>Math.max(max,product.productionDays),0);
+      if(maxProductionDays>0){const minimumDate=addDaysLocalISO(maxProductionDays);if(form.desiredDate<minimumDate)throw new Error(`Produto sob encomenda: escolha ${formatDateBR(minimumDate)} ou uma data posterior.`);}
       const selectedZone=form.fulfillment==='delivery'?db.deliveryZones.find((zone)=>zone.id===form.deliveryZoneId&&zone.active):undefined;
       if(form.fulfillment==='delivery'&&!selectedZone)throw new Error('Selecione um bairro/área de entrega disponível.');
       const demoDeliveryFee=selectedZone?.fee ?? 0;
