@@ -5,8 +5,14 @@ import { StoreHeader } from '../../components/StoreHeader';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
 import { useStore } from '../../contexts/StoreContext';
 import { trackPublicEvent } from '../../services/analyticsApi';
+import { isFloriWebMarketingRoot } from '../../lib/config';
+import Landing from './Landing';
 
 export default function Home(){
+  if(typeof window!=='undefined'&&isFloriWebMarketingRoot(window.location.pathname,window.location.hostname))return <Landing/>;
+  return <StorefrontHome/>;
+}
+function StorefrontHome(){
   const {products,categories,settings,loading,error,reloadPublic}=useStore();const[selectedCategory,setSelectedCategory]=useState('all');const[query,setQuery]=useState('');const[searchOpen,setSearchOpen]=useState(false);
   useEffect(()=>{if(!loading&&!error&&settings.id)void trackPublicEvent(settings.id,'storefront_view')},[loading,error,settings.id]);
   const visible=useMemo(()=>products.filter((product)=>{if(!product.active)return false;const categoryMatch=selectedCategory==='all'||product.categoryId===selectedCategory;const q=query.trim().toLowerCase();const textMatch=!q||`${product.name} ${product.description}`.toLowerCase().includes(q);return categoryMatch&&textMatch}),[products,selectedCategory,query]);
