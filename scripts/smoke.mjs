@@ -38,10 +38,10 @@ const m130 = read('supabase/migrations/202608270130_v3_analytics_events.sql');
 const m140 = read('supabase/migrations/202608270140_v3_checkout_edge_turnstile.sql');
 const m145 = read('supabase/migrations/202608270145_v3_checkout_idempotency.sql');
 const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
-const mMadeToOrder = read('supabase/migrations/202608280100_v3_made_to_order_lead_time.sql');
+const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC5.1', packageJson.version === '3.0.0-rc.5.1');
+ok('Versao V3 RC5.2', packageJson.version === '3.0.0-rc.5.2');
 ok('Rota primeiro acesso', app.includes('path="/admin/primeiro-acesso"'));
 ok('Primeiro acesso forca troca', app.includes('membership.mustChangePassword'));
 ok('Auth carrega must_change_password', auth.includes('must_change_password') && auth.includes('mustChangePassword'));
@@ -140,7 +140,7 @@ ok('Checkout bloqueia data abaixo do prazo', checkout.includes('min={minimumDesi
 ok('Carrinho avisa prazo de encomenda', read('src/pages/store/Cart.tsx').includes('Seu carrinho tem produto sob encomenda'));
 ok('Banco aplica prazo no item do pedido', mMadeToOrder.includes('order_items_made_to_order_lead_time_trg') && mMadeToOrder.includes('v_desired_date < v_minimum_date'));
 ok('Banco protege alteracao da data do pedido', mMadeToOrder.includes('orders_made_to_order_desired_date_trg'));
-ok('Validacao RC5.1 existe', exists('supabase/tests/VALIDAR_V3_RC5_1.sql'));
+ok('Validacao RC5.2 existe', exists('supabase/tests/VALIDAR_V3_RC5_2.sql'));
 
 
 ok('Bundle SQL RC1 preservado', exists('supabase/releases/20260827_v3_rc1_bundle.sql'));
