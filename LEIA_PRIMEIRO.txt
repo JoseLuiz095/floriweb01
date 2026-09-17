@@ -1,0 +1,26 @@
+FLORIWEB V3 RC6.11 - HOTFIX USUARIO E INTERACOES
+
+O QUE ESTE PACOTE FAZ
+- Mantem o projeto em 3.0.0-rc.6.11.
+- Ajusta o fundo das iniciais do usuario para verde solido com texto branco.
+- Aplica o mesmo padrao no Admin Master.
+- Mantem no banco a telemetria de "subscription charge create".
+- Nao mostra como falha critica o estado esperado:
+  "Ja existe um comprovante aguardando analise do Admin Master."
+- Preserva as demais falhas e a auditoria critica.
+- Cria backup automatico antes de alterar os arquivos.
+
+COMO USAR
+1. Extraia este ZIP diretamente na raiz do FloriWeb atual RC6.10/RC6.11.
+2. Execute APLICAR_FLORIWEB_RC611_AJUSTES.bat.
+3. Execute VALIDAR_FLORIWEB_RC611_AJUSTES.bat.
+4. Abra o sistema e confira Admin e Admin Master.
+5. Somente depois execute o BAT de publicacao GitHub.
+
+ARQUIVOS ALTERADOS PELO HOTFIX
+- package.json
+- package-lock.json (quando existir)
+- src/styles.css
+- src/pages/master/Diagnostics.tsx
+
+O .env nao e alterado.

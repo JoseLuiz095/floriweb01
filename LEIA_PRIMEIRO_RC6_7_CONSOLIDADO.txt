@@ -1,0 +1,32 @@
+FLORIWEB V3 RC6.7 CONSOLIDADO
+=============================
+
+Este pacote inclui em uma unica atualizacao:
+- RC6.6: indicador de mensalidade verde/amarelo/vermelho
+- RC6.6: Meu plano unificado com mensalidade/PIX/historico
+- RC6.6: OCR financeiro reforcado sem IA
+- RC6.6: correcao PDF.js com parametro canvas
+- RC6.7: melhoria visual do leitor financeiro
+- RC6.7: somente os botoes Tirar foto e Escolher arquivo visiveis
+- RC6.7: favicon versionado forcado novamente
+
+IMPORTANTE
+---------
+Nao execute PUBLICAR_RC6_6.bat.
+Este pacote substitui essa etapa.
+
+PASSO A PASSO
+-------------
+1. Extraia todo este ZIP dentro da raiz atual do FloriWeb.
+2. Execute APLICAR_RC6_7_CONSOLIDADO_NA_RAIZ.bat
+3. Se concluir com sucesso, execute PUBLICAR_RC6_7.bat
+
+NAO precisa:
+- recriar .env
+- reconfigurar Turnstile
+- repetir a migration RC6.5
+- criar Edge Function nova
+
+O publicador executa cada validacao separadamente para que, se houver erro,
+fique claro se ocorreu no smoke, fluxo critico, TypeScript, build Vite,
+favicon ou deploy Cloudflare.

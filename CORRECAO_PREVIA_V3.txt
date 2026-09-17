@@ -1,0 +1,12 @@
+FloriWeb V3 RC6.11 - PREVIA V3 CORRIGIDA
+
+Corrige os erros de TypeScript identificados na previa V2:
+- PlatformHelpButton volta a usar export default.
+- OpeningDayConfig agora possui breakStart/breakEnd.
+- Order agora possui paymentStatus/paymentReceivedAt/paymentConfirmedBy.
+- StoreHeader preserva searchOpen/onSearchClick usados por Home.tsx.
+- StoreHeader volta ao layout visual compativel com o CSS existente do FloriWeb.
+- Mantem horarios de hoje + outros dias e pausa de almoco.
+
+Nao altera .env, Supabase, wrangler.jsonc ou secrets.
+O backup _backup_preview_rc6_11 existente e preservado.

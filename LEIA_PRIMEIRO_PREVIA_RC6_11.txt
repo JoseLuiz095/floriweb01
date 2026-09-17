@@ -1,0 +1,25 @@
+FLORIWEB V3 RC6.11 - VERSAO PREVIA
+==================================
+
+Objetivo:
+- aplicar os ajustes RC6.11 na copia local do projeto;
+- validar TypeScript e build;
+- publicar em um Worker separado de PREVIA;
+- NAO substituir o Worker de producao "floriweb".
+
+Preview Worker:
+https://floriweb-preview-rc611.joseluizacama.workers.dev
+
+Passos:
+1. Extraia este ZIP diretamente na RAIZ do FloriWeb.
+2. Execute APLICAR_RC6_11_PREVIA_NA_RAIZ.bat.
+3. Execute PUBLICAR_PREVIA_RC6_11.bat.
+4. Confira a versao online pelo endereco de previa acima.
+5. Se nao aprovar, execute RESTAURAR_ANTES_RC6_11.bat.
+
+IMPORTANTE:
+- .env, wrangler.jsonc, supabase/config.toml e .git nao sao alterados.
+- O preview usa o mesmo .env ja configurado no projeto.
+- Portanto, se o .env apontar para o Supabase de producao, operacoes feitas no preview podem gravar dados reais.
+- Para teste visual, prefira uma loja de teste/demo.
+- Nenhuma migration nova e necessaria para estes ajustes.

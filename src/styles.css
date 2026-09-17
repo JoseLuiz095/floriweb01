@@ -862,3 +862,398 @@ button:disabled{cursor:not-allowed}button[aria-busy="true"]{cursor:progress}.che
 @media(max-width:700px){.flori-hero-product-row{grid-template-columns:1fr 1fr}.flori-hero-product-row article:last-child{display:none}.flori-hero-store-card{grid-template-columns:auto 1fr}.flori-hero-store-card>a{grid-column:1/-1;justify-content:center;padding:8px;border-radius:999px;background:#f8edf1}.flori-benefit-grid-v62{grid-template-columns:1fr}.flori-tour-storefront-body{grid-template-columns:1fr;padding:18px}.flori-tour-storefront-body img{max-height:260px}.flori-tour-modules{grid-template-columns:1fr}.flori-tour-cta{align-items:stretch;flex-direction:column}.flori-tour-cta>a{justify-content:center}.flori-help-fab{right:14px;bottom:16px;padding:12px}.flori-help-fab span{display:none}.flori-master-billing-grid .span-2{grid-column:auto}}
 .has-mobile-cart-dock .flori-help-fab{bottom:92px}
 @media(max-width:700px){.has-mobile-cart-dock .flori-help-fab{bottom:86px}}
+/* FloriWeb V3 RC6.3: contato protegido + suporte interno + login Turnstile */
+.flori-sales-page-v63 button.flori-sales-primary,
+.flori-sales-page-v63 .flori-plan-grid button,
+.flori-sales-page-v63 .flori-tour-cta button,
+.flori-sales-page-v63 .flori-sales-final button{font:inherit;cursor:pointer}
+.flori-sales-page-v63 .flori-plan-note{display:flex;align-items:center;justify-content:center;gap:8px;color:#7a5962;font-size:.76rem;margin:20px auto 0;text-align:center}
+.flori-sales-page-v63 .flori-plan-note svg{color:#7d273d;flex:0 0 auto}
+.flori-contact-overlay{position:fixed;inset:0;z-index:260;background:rgba(38,22,29,.62);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px}
+.flori-contact-card{position:relative;width:min(470px,100%);display:grid;gap:12px;background:#fffaf8;border:1px solid #eadde0;border-radius:22px;padding:28px;box-shadow:0 30px 90px rgba(41,19,27,.26)}
+.flori-contact-close{position:absolute;right:14px;top:14px;width:36px;height:36px;border-radius:50%;border:1px solid #eadfe1;background:#fff;display:grid;place-items:center;cursor:pointer}
+.flori-contact-icon{width:48px;height:48px;border-radius:15px;background:#f4e8ec;color:#7d273d;display:grid;place-items:center}
+.flori-contact-card h2{margin:0;font-size:1.45rem;color:#3b222b}
+.flori-contact-card p{margin:0 0 3px;color:#745e65;font-size:.8rem;line-height:1.55}
+.flori-contact-card .turnstile-shell{padding:12px;border:1px solid #e6dfe1;border-radius:13px;background:#fff}
+.flori-contact-submit{width:100%;min-height:48px}
+.flori-contact-card>small{font-size:.65rem;color:#85747a;text-align:center}
+.login-security-card{display:grid;gap:11px;margin-top:16px;padding:13px;border:1px solid #e1d8dc;background:#fffafc;border-radius:13px}
+.login-security-card>div:first-child{display:flex;gap:9px;align-items:center;color:#7d273d}
+.login-security-card>div:first-child span{display:grid;gap:2px}
+.login-security-card strong{font-size:.75rem}.login-security-card small{font-size:.64rem;color:#77686d}
+.security-config-warning{display:block;margin-top:15px;padding:10px 12px;border-radius:9px;background:#fff1d8;color:#785510;font-size:.68rem;line-height:1.5}
+.flori-admin-only-help{z-index:190}.admin-shell .flori-admin-only-help{bottom:18px}
+@media(max-width:640px){.flori-contact-card{padding:22px 16px}.flori-sales-page-v63 .flori-plan-note{align-items:flex-start;text-align:left}}
+
+/* FloriWeb V3 RC6.4: OCR local + CTA final */
+.flori-document-reader-rc64{display:grid;gap:12px;padding:16px;border:1px dashed #cdbbc1;border-radius:14px;background:#fbf7f8}.flori-document-reader-copy-rc64{display:flex;align-items:flex-start;gap:12px}.flori-document-reader-copy-rc64>svg{margin-top:2px;color:#8f2f4c}.flori-document-reader-copy-rc64>div{display:grid;gap:3px}.flori-document-reader-copy-rc64 span{display:block;color:#776c70;font-size:12px;line-height:1.45}.flori-document-actions-rc64{display:flex;gap:9px;flex-wrap:wrap}.flori-document-actions-rc64 button{min-height:40px;padding:0 14px;border:1px solid #cdbbc1;border-radius:10px;background:#fff;color:#382e32;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.flori-document-actions-rc64 button:first-child{background:#8f2f4c;color:#fff;border-color:#8f2f4c}.flori-document-actions-rc64 button:disabled{opacity:.55;cursor:wait}.flori-local-read-status-rc64,.flori-local-read-signals-rc64{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #eadfe2;color:#65595e;font-size:12px;line-height:1.4}.flori-local-read-status-rc64 svg{flex:0 0 auto;color:#8f2f4c}.flori-local-read-signals-rc64{display:grid;gap:2px;background:#f0f8f3;border-color:#cce7d6}.flori-local-read-signals-rc64 strong{color:#276947}.flori-local-read-signals-rc64 small{color:#6e625f}.flori-sales-final-button-rc64{min-height:52px;padding:0 22px;border:0;border-radius:14px;background:var(--rose)!important;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;gap:9px;font:inherit;font-weight:850;white-space:nowrap;cursor:pointer;box-shadow:0 10px 25px rgba(159,49,81,.2);transition:transform .16s ease,box-shadow .16s ease}.flori-sales-final-button-rc64:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(159,49,81,.25)}
+@media(max-width:620px){.flori-document-actions-rc64{display:grid;grid-template-columns:1fr 1fr}.flori-document-actions-rc64 button{width:100%}.flori-sales-final-button-rc64{width:100%;white-space:normal}}
+
+
+/* FloriWeb V3 RC6.5: mensalidade, vencimento e gestao de acesso */
+.admin-billing-status-rc65{min-width:190px;display:flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:12px;padding:8px 11px;background:#fff;font:inherit;text-align:left;cursor:pointer;transition:border-color .16s ease,background .16s ease,transform .16s ease}.admin-billing-status-rc65:hover{transform:translateY(-1px)}.admin-billing-status-rc65>svg{flex:0 0 auto}.admin-billing-status-rc65>span{display:grid;gap:1px}.admin-billing-status-rc65 strong{font-size:.7rem;line-height:1.15}.admin-billing-status-rc65 small{font-size:.61rem;color:inherit;opacity:.78;white-space:nowrap}.admin-billing-status-rc65.is-current{background:#eef9f3;border-color:#bddfc9;color:#176b46}.admin-billing-status-rc65.is-overdue{background:#fff1f0;border-color:#efb9b5;color:#a4312a}
+.flori-billing-health-rc65{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin-bottom:16px}.flori-billing-health-rc65>svg{flex:0 0 auto}.flori-billing-health-rc65 h2{margin:4px 0 3px}.flori-billing-health-rc65 p{margin:0}.flori-billing-health-rc65>strong{padding:8px 11px;border-radius:999px;font-size:.72rem;white-space:nowrap}.flori-billing-health-rc65.is-current{border-color:#c7e4d2;background:#f4fbf7}.flori-billing-health-rc65.is-current>svg,.flori-billing-health-rc65.is-current>strong{color:#176b46}.flori-billing-health-rc65.is-current>strong{background:#e2f4e9}.flori-billing-health-rc65.is-overdue{border-color:#efc5c0;background:#fff7f6}.flori-billing-health-rc65.is-overdue>svg,.flori-billing-health-rc65.is-overdue>strong{color:#aa342c}.flori-billing-health-rc65.is-overdue>strong{background:#fde8e5}
+.flori-current-plan-rc65{display:grid;grid-template-columns:minmax(210px,.7fr) minmax(0,1.3fr);gap:20px;align-items:center}.flori-subscription-meta-rc65{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.flori-subscription-meta-rc65>span{display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:1px;padding:12px;border:1px solid #eadfe2;border-radius:12px;background:rgba(255,255,255,.72)}.flori-subscription-meta-rc65 svg{grid-row:1/3;color:#8f2f4c}.flori-subscription-meta-rc65 small{color:#766a6f;font-size:.66rem}.flori-subscription-meta-rc65 strong{font-size:.78rem}
+.flori-last-payment-rc65{margin-top:16px}.flori-last-payment-grid-rc65{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.flori-last-payment-grid-rc65>span{display:grid;gap:3px;padding:12px;border-radius:11px;background:#fbf8f9;border:1px solid #eee5e8}.flori-last-payment-grid-rc65 small{color:#7b6e73;font-size:.67rem}.flori-last-payment-grid-rc65 strong{font-size:.78rem;overflow-wrap:anywhere}.flori-last-rejection-rc65{display:flex;gap:12px;align-items:flex-start;margin-top:16px;border-color:#efc4bf;background:#fff7f6}.flori-last-rejection-rc65>svg{color:#ac382f;flex:0 0 auto}.flori-last-rejection-rc65 p{margin:4px 0}.flori-last-rejection-rc65 small{color:#82645f}
+.flori-pending-reference-rc65{display:flex;gap:8px;align-items:center;margin:3px 0 15px;padding:9px 11px;border-radius:10px;background:#fbf7f8;color:#6f6267;font-size:.72rem}.flori-payment-history-rc65{margin-top:16px}.flori-payment-history-list-rc65{display:grid;margin-top:10px}.flori-payment-history-row-rc65{display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #eee8ea;font-size:.72rem}.flori-payment-history-row-rc65 small{color:#766a6f}.flori-payment-history-row-rc65 b{justify-self:start;padding:5px 8px;border-radius:999px;font-size:.64rem}.status-rejected{background:#fde8e5;color:#9f3029}.status-cancelled{background:#eee;color:#6f6f6f}
+.master-payment-summary-rc65{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.master-payment-summary-rc65>span{display:flex;align-items:baseline;gap:8px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px}.master-payment-summary-rc65 strong{font-size:1.25rem}.master-payment-summary-rc65 small{color:var(--muted)}.flori-payment-admin-meta-rc65{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.flori-payment-admin-meta-rc65>span{display:grid;gap:2px;padding:9px 10px;border-radius:9px;background:#faf8f8}.flori-payment-admin-meta-rc65 strong{overflow-wrap:anywhere}.master-payment-overdue-rc65{display:flex;align-items:flex-start;gap:8px;margin:10px 0;padding:9px 11px;border-radius:9px;background:#fff0ee;color:#9c3029;font-size:.7rem}.master-payment-rejection-reason-rc65{margin:10px 0;padding:10px 12px;border-radius:9px;background:#fff7f6;border-left:3px solid #b74036;font-size:.72rem;color:#705a55}.master-payment-actions-rc65{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:12px}.danger-button-rc65{border-color:#e4aaa5!important;color:#a5322a!important;background:#fff8f7!important}.danger-primary-rc65{background:#a5322a!important;border-color:#a5322a!important}.master-payment-reject-modal-rc65 textarea{width:100%;min-height:100px;margin-top:7px;border:1px solid #d9d0d3;border-radius:10px;padding:10px;font:inherit;resize:vertical}
+.master-due-cell-rc65{display:grid;gap:2px;min-width:105px}.master-due-cell-rc65 strong{color:#176b46}.master-due-cell-rc65 small{font-size:.67rem;color:#766a6f}.master-due-cell-rc65.is-overdue strong,.master-due-cell-rc65.is-overdue small{color:#a5322a}.master-credential-edit-rc65{display:grid;gap:14px}.master-credential-edit-head-rc65{display:flex;gap:10px;align-items:flex-start}.master-credential-edit-head-rc65>svg{color:#176b46;flex:0 0 auto;margin-top:2px}.master-credential-edit-head-rc65>div{display:grid;gap:3px}.master-credential-edit-head-rc65 strong{font-size:.88rem}.master-credential-edit-head-rc65 small{font-size:.7rem;color:#6c685f;line-height:1.4}.master-credential-edit-action-rc65{display:flex;justify-content:flex-end}.master-credential-edit-action-rc65 button{min-width:190px}
+@media(max-width:1050px){.admin-billing-status-rc65{min-width:0}.admin-billing-status-rc65 small{display:none}.flori-current-plan-rc65{grid-template-columns:1fr}.flori-subscription-meta-rc65{grid-template-columns:repeat(3,minmax(0,1fr))}.flori-payment-admin-meta-rc65{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.admin-billing-status-rc65{padding:7px 9px}.admin-billing-status-rc65 strong{font-size:.65rem}.flori-billing-health-rc65{grid-template-columns:auto 1fr}.flori-billing-health-rc65>strong{grid-column:2}.flori-last-payment-grid-rc65,.flori-subscription-meta-rc65{grid-template-columns:1fr}.flori-payment-history-row-rc65{grid-template-columns:1fr 1fr}.master-payment-summary-rc65{grid-template-columns:1fr}.flori-payment-admin-meta-rc65{grid-template-columns:1fr}.master-payment-actions-rc65{justify-content:stretch}.master-payment-actions-rc65 button{flex:1}.master-credential-edit-action-rc65 button{width:100%}}
+@media(max-width:560px){.admin-billing-status-rc65 span{display:none}.admin-billing-status-rc65{min-width:38px;width:38px;height:38px;padding:0;justify-content:center;border-radius:50%}.flori-billing-health-rc65{grid-template-columns:1fr}.flori-billing-health-rc65>strong{grid-column:auto;justify-self:start}.flori-payment-history-row-rc65{grid-template-columns:1fr}.master-payment-actions-rc65{display:grid;grid-template-columns:1fr}.master-payment-actions-rc65 button{width:100%}}
+
+
+/* FloriWeb V3 RC6.6: Meu plano unificado, status de vencimento e OCR reforcado */
+.admin-billing-status-rc66{flex:0 0 auto;min-width:176px;max-width:230px;display:flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:12px;padding:8px 11px;background:#fff;font:inherit;text-align:left;white-space:nowrap;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}.admin-billing-status-rc66:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.06)}.admin-billing-status-rc66>svg{flex:0 0 auto}.admin-billing-status-rc66>span{min-width:0;display:grid;gap:1px}.admin-billing-status-rc66 strong{display:block;font-size:.7rem;line-height:1.15}.admin-billing-status-rc66 small{display:block;font-size:.61rem;line-height:1.2;color:inherit;opacity:.82;overflow:hidden;text-overflow:ellipsis}.admin-billing-status-rc66.is-current{background:#eef9f3;border-color:#bddfc9;color:#176b46}.admin-billing-status-rc66.is-warning{background:#fff9e8;border-color:#ead18a;color:#8a6511}.admin-billing-status-rc66.is-overdue{background:#fff1f0;border-color:#efb9b5;color:#a4312a}
+.flori-billing-health-rc66{scroll-margin-top:88px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin-bottom:16px}.flori-billing-health-rc66>svg{flex:0 0 auto}.flori-billing-health-rc66 h2{margin:4px 0 3px}.flori-billing-health-rc66 p{margin:0}.flori-billing-health-rc66>strong{padding:8px 11px;border-radius:999px;font-size:.72rem;white-space:nowrap}.flori-billing-health-rc66.is-current{border-color:#c7e4d2;background:#f4fbf7}.flori-billing-health-rc66.is-current>svg,.flori-billing-health-rc66.is-current>strong{color:#176b46}.flori-billing-health-rc66.is-current>strong{background:#e2f4e9}.flori-billing-health-rc66.is-warning{border-color:#ead7a0;background:#fffaf0}.flori-billing-health-rc66.is-warning>svg,.flori-billing-health-rc66.is-warning>strong{color:#8a6511}.flori-billing-health-rc66.is-warning>strong{background:#fff0c8}.flori-billing-health-rc66.is-overdue{border-color:#efc5c0;background:#fff7f6}.flori-billing-health-rc66.is-overdue>svg,.flori-billing-health-rc66.is-overdue>strong{color:#aa342c}.flori-billing-health-rc66.is-overdue>strong{background:#fde8e5}
+.flori-plan-heading-actions-rc66{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.flori-plan-core-rc66{margin-top:16px}.flori-plan-grid-rc66{margin-top:16px}.flori-plan-card-action-rc66{display:grid;gap:9px}.flori-plan-card-action-rc66 .primary-button,.flori-plan-card-action-rc66 .secondary-button{width:100%;min-height:44px}.flori-payment-simple-rc66{margin:18px 0;display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:12px}.flori-payment-simple-rc66>svg{color:#8f2f4c}.flori-payment-simple-rc66 h2{margin:0 0 4px;font-size:1rem}.flori-payment-simple-rc66 p{margin:0}.flori-payment-simple-rc66>span{padding:6px 10px;border-radius:999px;background:#f5eff1;color:#6f5961;font-size:.68rem;font-weight:800;white-space:nowrap}.flori-payment-card-rc66{scroll-margin-top:88px}.flori-current-plan-rc65{margin-top:0}.flori-last-payment-rc65{margin-top:16px}
+@media(max-width:1160px){.admin-billing-status-rc66{min-width:142px;max-width:180px}.admin-billing-status-rc66 small{display:none}}
+@media(max-width:820px){.admin-billing-status-rc66{min-width:40px;width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}.admin-billing-status-rc66>span{display:none}.flori-billing-health-rc66{grid-template-columns:auto 1fr}.flori-billing-health-rc66>strong{grid-column:2;justify-self:start}.flori-payment-simple-rc66{grid-template-columns:auto 1fr}.flori-payment-simple-rc66>span{grid-column:2;justify-self:start}.flori-plan-heading-actions-rc66{width:100%}.flori-plan-heading-actions-rc66 .current-plan-pill,.flori-plan-heading-actions-rc66 .secondary-button{flex:1}}
+@media(max-width:560px){.flori-billing-health-rc66{grid-template-columns:1fr}.flori-billing-health-rc66>strong{grid-column:auto}.flori-payment-simple-rc66{grid-template-columns:1fr}.flori-payment-simple-rc66>span{grid-column:auto}}
+
+
+/* FloriWeb V3 RC6.7: leitura financeira compacta e sem inputs nativos visiveis */
+.flori-document-reader-rc67{display:grid;gap:14px;padding:18px;border:1px solid #eadde1;border-radius:16px;background:linear-gradient(180deg,#fffafa 0%,#fff 100%)}
+.flori-document-reader-head-rc67{display:flex;align-items:flex-start;gap:12px}
+.flori-document-reader-icon-rc67{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--rose-soft);color:var(--rose);flex:0 0 auto}
+.flori-document-reader-head-rc67>div:last-child{display:grid;gap:3px}
+.flori-document-reader-head-rc67>div:last-child>strong{font-size:.94rem;color:var(--ink)}
+.flori-document-reader-head-rc67 p{margin:0;color:var(--muted);font-size:.77rem;line-height:1.45;max-width:760px}
+.flori-document-actions-rc67{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.flori-document-actions-rc67 button{min-height:58px;border:1px solid #ddcdd2;border-radius:13px;background:#fff;color:var(--ink);padding:9px 14px;display:flex;align-items:center;justify-content:flex-start;gap:10px;text-align:left;cursor:pointer;transition:.18s ease}
+.flori-document-actions-rc67 button:hover{border-color:var(--rose);box-shadow:0 7px 18px rgba(133,61,82,.08);transform:translateY(-1px)}
+.flori-document-actions-rc67 button.is-primary{background:var(--rose);border-color:var(--rose);color:#fff}
+.flori-document-actions-rc67 button:disabled{opacity:.56;cursor:wait;transform:none;box-shadow:none}
+.flori-document-actions-rc67 button>span{display:grid;gap:1px}
+.flori-document-actions-rc67 button strong{font-size:.79rem}
+.flori-document-actions-rc67 button small{font-size:.66rem;opacity:.78;font-weight:600}
+.flori-local-read-status-rc67{display:grid;gap:8px;padding:11px 12px;border:1px solid #eadfe2;border-radius:11px;background:#fff}
+.flori-local-read-status-line-rc67{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center}
+.flori-local-read-status-line-rc67>svg{color:var(--rose)}
+.flori-local-read-status-line-rc67>span{display:grid;gap:1px}
+.flori-local-read-status-line-rc67 strong{font-size:.74rem}.flori-local-read-status-line-rc67 small{font-size:.68rem;color:var(--muted)}
+.flori-local-read-status-line-rc67>b{font-size:.7rem;color:var(--rose)}
+.flori-local-read-progress-rc67{height:6px;border-radius:99px;background:#f0e6e9;overflow:hidden}.flori-local-read-progress-rc67 i{display:block;height:100%;border-radius:inherit;background:var(--rose);transition:width .2s ease}
+.flori-local-read-result-rc67{display:grid;gap:9px;padding:12px 13px;border:1px solid #cce7d6;border-radius:11px;background:#f2faf5}
+.flori-local-read-result-rc67>div:first-child{display:grid;gap:2px}.flori-local-read-result-rc67 strong{font-size:.75rem;color:var(--green)}.flori-local-read-result-rc67 span{font-size:.69rem;color:#5e6a62}
+.flori-local-read-chips-rc67{display:flex;flex-wrap:wrap;gap:6px}.flori-local-read-chips-rc67 span{padding:4px 7px;border-radius:999px;background:#fff;border:1px solid #d9e9df;color:#3e5f4d;font-size:.64rem;font-weight:700}
+.flori-document-reader-footnote-rc67{color:var(--muted);font-size:.65rem;line-height:1.4}
+.flori-document-reader-rc67 input[hidden]{display:none!important}
+@media(max-width:680px){.flori-document-reader-rc67{padding:14px}.flori-document-actions-rc67{grid-template-columns:1fr}.flori-document-actions-rc67 button{min-height:54px}.flori-document-reader-head-rc67 p{font-size:.73rem}}
+
+
+/* RC6.8 - confirmacao de recebimento do pedido */
+.order-payment-confirm-button{
+  min-height:36px;
+  padding:0 11px;
+  border:1px solid #b9dcc8;
+  border-radius:10px;
+  background:#f2fbf5;
+  color:var(--green);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  font-size:.72rem;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.18s ease;
+}
+.order-payment-confirm-button:hover{background:var(--green);color:#fff;border-color:var(--green);transform:translateY(-1px)}
+.order-payment-confirm-button:disabled{opacity:.55;cursor:wait;transform:none}
+.order-payment-received{display:inline-flex;align-items:flex-start;gap:7px;color:var(--green);font-size:.72rem}
+.order-payment-received>svg{margin-top:1px;flex:0 0 auto}
+.order-payment-received>span{display:grid;gap:1px}
+.order-payment-received strong{font-size:.72rem}
+.order-payment-received small{color:var(--muted);font-size:.62rem;white-space:nowrap}
+.order-payment-cancelled{display:inline-flex;color:#9b3434;background:#fff1f0;border:1px solid #f1cfcb;border-radius:999px;padding:6px 9px;font-size:.65rem;font-weight:800;white-space:nowrap}
+@media(max-width:760px){.order-payment-confirm-button{width:100%;min-width:154px}}
+
+
+/* RC6.9 - estabilidade, cobranca e diagnostico */
+.master-pending-center-r69{display:grid;gap:16px;margin:0 0 20px}.master-pending-grid-r69{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.master-pending-grid-r69>a{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-soft,#fafafa);color:inherit;text-decoration:none;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}.master-pending-grid-r69>a:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--brand,#2f7d52) 35%,var(--border));box-shadow:0 8px 24px rgba(15,23,42,.07)}.master-pending-grid-r69>a>span{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:#eef2ff;color:#4338ca;flex:0 0 auto}.master-pending-grid-r69>a>span.is-overdue,.master-pending-grid-r69>a>span.is-error{background:#fff1f2;color:#be123c}.master-pending-grid-r69>a>span.is-plan{background:#fff7ed;color:#c2410c}.master-pending-grid-r69>a>div{display:grid;gap:2px}.master-pending-grid-r69 strong{font-size:1.35rem;line-height:1}.master-pending-grid-r69 small{color:var(--text-muted,#64748b);line-height:1.3}.master-payment-proof-note-r69{display:block;grid-column:1/-1;color:var(--text-muted,#64748b);font-size:.78rem;padding-top:2px}.interaction-diagnostics-r69{display:grid;gap:16px;margin-top:20px}.interaction-diagnostics-grid-r69{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.interaction-diagnostics-grid-r69>div{min-width:0}.interaction-diagnostics-grid-r69>div.full{grid-column:1/-1}.interaction-diagnostics-grid-r69 h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:.95rem}.interaction-diagnostics-grid-r69 h3 b{font-size:.78rem;min-width:28px;text-align:center;border-radius:999px;padding:4px 8px;background:var(--surface-soft,#f1f5f9)}.interaction-event-list-r69{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:4px}.interaction-event-list-r69 article{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 11px;border:1px solid var(--border);border-radius:12px;background:var(--surface-soft,#fafafa)}.interaction-event-list-r69 article>span{width:30px;height:30px;display:grid;place-items:center;border-radius:9px}.interaction-event-list-r69 .is-error{background:#fff1f2;color:#be123c}.interaction-event-list-r69 .is-warning{background:#fffbeb;color:#b45309}.interaction-event-list-r69 .is-success{background:#ecfdf5;color:#047857}.interaction-event-list-r69 article>div{display:grid;gap:2px;min-width:0}.interaction-event-list-r69 small,.interaction-event-list-r69 p{color:var(--text-muted,#64748b);font-size:.76rem;line-height:1.4;margin:0;overflow-wrap:anywhere}.interaction-event-list-r69 em{font-style:normal;font-size:.7rem;color:var(--text-muted,#64748b);white-space:nowrap}.interaction-event-list-r69.compact{grid-template-columns:repeat(2,minmax(0,1fr));display:grid;max-height:none}.diagnostic-error-inline-r69{display:flex;align-items:flex-start;gap:8px;padding:12px;border-radius:12px;background:#fff7ed;color:#9a3412}.is-autofilled-r69{position:relative;border-color:rgba(5,150,105,.35)!important;background:rgba(236,253,245,.45)!important;border-radius:10px;padding:7px!important}.autofill-mark-r69{float:right;color:#047857;font-size:.68rem;font-weight:700;letter-spacing:.02em}.finance-origin-badge-r69{display:inline-flex;width:max-content;margin-top:4px;padding:3px 7px;border-radius:999px;font-size:.68rem;font-weight:700;background:#f1f5f9;color:#475569}.finance-origin-badge-r69.is-order{background:#ecfdf5;color:#047857}.finance-order-link-r69{display:inline-flex;width:max-content;margin-top:3px;font-size:.72rem;font-weight:700;color:var(--brand,#2f7d52);text-decoration:none}.finance-order-link-r69:hover{text-decoration:underline}
+@media(max-width:960px){.master-pending-grid-r69{grid-template-columns:repeat(2,minmax(0,1fr))}.interaction-diagnostics-grid-r69{grid-template-columns:1fr}.interaction-diagnostics-grid-r69>div.full{grid-column:auto}.interaction-event-list-r69.compact{grid-template-columns:1fr}}
+@media(max-width:560px){.master-pending-grid-r69{grid-template-columns:1fr}.interaction-event-list-r69 article{grid-template-columns:auto minmax(0,1fr)}.interaction-event-list-r69 em{grid-column:2}}
+
+
+/* FloriWeb RC6.10 - planos simplificados e Business sob medida */
+.flori-business-price-rc610 strong{font-size:1.5rem;letter-spacing:-.02em}.flori-business-price-rc610>span:last-child{font-size:.7rem;color:#b9d0c1}.master-business-rc610{border:1px solid #d8e8dd;background:linear-gradient(135deg,#fbfefc,#f2f8f4)}.master-business-note-rc610{display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:11px 12px;border-radius:10px;background:#eaf6ee;color:#176a43;font-size:.76rem;font-weight:750}.flori-business-plan-rc610{background:linear-gradient(150deg,#112e22,#173f2d)!important;color:#fff!important;border-color:#173f2d!important}.flori-business-plan-rc610>b{display:inline-flex;width:max-content;border-radius:999px;background:rgba(255,255,255,.12);color:#eaf6ee;padding:6px 9px;font-size:.68rem}.flori-business-plan-rc610 small,.flori-business-plan-rc610 p,.flori-business-plan-rc610 strong span{color:#c9ddd0!important}.flori-business-plan-rc610 li{color:#edf7f0}.flori-business-plan-rc610 a,.flori-business-plan-rc610 button{margin-top:auto}.flori-business-plan-rc610 svg{color:#91d6ae}
+
+/* ===== RC6.11 refinement: orders, store hours, PIX and admin cards ===== */
+:root {
+  --admin-accent: #217346;
+  --admin-accent-soft: rgba(33, 115, 70, 0.14);
+  --admin-warm-surface: #f8faf8;
+}
+
+.orders-toolbar--filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) auto auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.toolbar-selects {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-selects label,
+.orders-toolbar__sync {
+  display: grid;
+  gap: 6px;
+}
+
+.toolbar-selects span {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.toolbar-selects select,
+.order-status-select {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 0 14px;
+  font: inherit;
+}
+
+.orders-toolbar__sync {
+  justify-items: end;
+  text-align: right;
+}
+
+.compact-button {
+  min-height: 40px;
+  padding-inline: 14px;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.highlight-order-banner {
+  margin: 0 20px 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-weight: 600;
+}
+
+.order-row-highlighted {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: -2px;
+  background: linear-gradient(90deg, rgba(33, 115, 70, 0.08), rgba(33, 115, 70, 0.02));
+}
+
+.order-row-highlighted td:first-child strong::before {
+  content: '•';
+  color: var(--admin-accent);
+  margin-right: 8px;
+}
+
+.opening-day-row {
+  grid-template-columns: minmax(180px, 1.2fr) repeat(5, minmax(130px, 1fr));
+}
+
+.opening-day-toggle,
+.opening-break-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.opening-break-toggle {
+  margin-top: 1.65rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hours-summary-card,
+.food-hours-panel {
+  display: grid;
+  gap: 10px;
+  min-width: min(100%, 640px);
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(24, 51, 41, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.hours-summary-line,
+.food-hours-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.hours-summary-line strong,
+.food-hours-summary strong {
+  display: block;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.hours-summary-line span,
+.food-hours-summary span {
+  display: block;
+  margin-top: 2px;
+}
+
+.hours-details {
+  border-top: 1px dashed rgba(24, 51, 41, 0.18);
+  padding-top: 10px;
+}
+
+.hours-details summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  color: var(--admin-accent);
+}
+
+.hours-details summary::-webkit-details-marker { display: none; }
+
+.hours-details-list,
+.food-hours-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.hours-details-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 0.95rem;
+}
+
+.hours-details-item strong {
+  min-width: 44px;
+}
+
+.hours-details-item.is-today {
+  color: var(--admin-accent);
+  font-weight: 700;
+}
+
+.pix-key-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.pix-copy-button {
+  min-width: 108px;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 14px;
+}
+
+.pix-copy-button span {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.master-admin-mini,
+.admin-user {
+  overflow: hidden;
+}
+
+.master-admin-mini > div,
+.admin-user > div {
+  min-width: 0;
+}
+
+.master-admin-mini strong,
+.master-admin-mini small,
+.admin-user strong,
+.admin-user small {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.master-admin-mini {
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.master-admin-mini > span,
+.admin-user > span {
+  box-shadow: 0 8px 24px rgba(10, 22, 14, 0.18);
+}
+
+@media (max-width: 980px) {
+  .orders-toolbar--filters {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-toolbar__sync {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .opening-day-row {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+
+  .opening-break-toggle {
+    margin-top: 0;
+  }
+
+  .hours-details-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* RC6.11 - horario compacto da vitrine */
+.store-card__chips .store-today-hours{gap:6px;white-space:normal}
+.store-card__chips .store-today-hours b{color:var(--green);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+.store-hours-details{position:relative;display:inline-flex;align-items:center}
+.store-hours-details>summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.78rem;font-weight:750;background:#fff;color:var(--green)}
+.store-hours-details>summary::-webkit-details-marker{display:none}
+.store-hours-details__list{position:absolute;z-index:20;top:34px;left:0;width:270px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 14px 32px rgba(20,43,29,.14);display:grid;gap:4px}
+.store-hours-details__list>div{display:flex;justify-content:space-between;gap:14px;padding:7px 8px;border-radius:9px;font-size:.76rem;color:var(--muted)}
+.store-hours-details__list>div.is-today{background:var(--green-soft);color:var(--green)}
+.store-hours-details__list strong{min-width:34px;color:inherit}
+@media(max-width:560px){.store-hours-details__list{position:fixed;left:12px;right:12px;top:auto;bottom:18px;width:auto;max-height:70vh;overflow:auto}}
+
+/* ===== RC6.11 preview V4 - horario flutuante acima do conteudo ===== */
+.store-card{z-index:40;overflow:visible}
+.store-card__chips{position:relative;z-index:60;overflow:visible}
+.storefront-body{position:relative;z-index:1}
+.store-hours-popover{position:relative;display:inline-flex;align-items:center;z-index:300}
+.store-hours-button{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.78rem;font-weight:750;background:#fff;color:var(--green)}
+.store-hours-button:hover,.store-hours-button[aria-expanded="true"]{background:var(--green-soft);border-color:#bfd4c7}
+.store-hours-details__list{z-index:2000!important}
+@media(max-width:560px){
+  .store-hours-popover{position:static}
+  .store-hours-details__list{z-index:5000!important}
+}
+
+/* FloriWeb RC6.11 - avatar de usuario com fundo solido */
+.admin-user>span,
+.master-admin-mini>span {
+  background: var(--green) !important;
+  color: #fff !important;
+}
+/* fim FloriWeb RC6.11 - avatar de usuario */

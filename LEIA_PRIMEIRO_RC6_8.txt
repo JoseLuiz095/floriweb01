@@ -1,0 +1,32 @@
+FloriWeb V3 RC6.8 - RECEBIMENTO DO PEDIDO -> FINANCEIRO
+
+OBJETIVO
+Ao confirmar manualmente o recebimento do pagamento de um pedido, o sistema grava a entrada no Financeiro automaticamente.
+
+REGRA
+- O pedido possui um status de pagamento separado do status do pedido.
+- O botao "Confirmar recebimento" fica na tela Pedidos.
+- A confirmacao e transacional no banco.
+- A entrada financeira usa categoria Vendas, valor total do pedido e data/hora da confirmacao.
+- O vinculo order_id + indice unico impede duplicidade, inclusive em clique duplo/repeticao.
+- Pedido cancelado nao pode ter recebimento confirmado.
+- Se um pedido ja recebido for cancelado, a entrada automatica e marcada como cancelada.
+
+COMO APLICAR
+1. Extraia este pacote na RAIZ ATUAL do FloriWeb.
+2. Execute APLICAR_RC6_8_NA_RAIZ.bat.
+3. No Supabase SQL Editor execute:
+   supabase\migrations\202609041600_floriweb_rc6_8_order_payment_finance.sql
+4. Execute no SQL Editor:
+   supabase\VALIDAR_RC6_8.sql
+5. Se a validacao estiver correta, execute PUBLICAR_RC6_8.bat.
+
+CONFIGURACOES PRESERVADAS
+O patch nao inclui nem substitui .env, .env.local, .env.production, wrangler.jsonc ou supabase/config.toml.
+
+TESTE FINAL
+- Abra um pedido ainda nao recebido.
+- Clique Confirmar recebimento.
+- Abra Financeiro.
+- Deve existir uma entrada "Pedido #..." na categoria Vendas com o valor total.
+- Atualize a pagina e tente repetir: nao deve existir segunda entrada.

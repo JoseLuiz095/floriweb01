@@ -1,0 +1,29 @@
+FLORIWEB V3 RC6.6
+
+PRE-REQUISITO
+- O projeto deve estar na RC6.5 com a migration RC6.5 ja aplicada.
+
+COMO APLICAR
+1. Extraia TODO o conteudo deste ZIP diretamente na raiz atual do FloriWeb.
+2. Execute APLICAR_RC6_6_NA_RAIZ.bat.
+3. Nao e necessario executar SQL novo.
+4. Execute PUBLICAR_RC6_6.bat.
+
+O PATCH PRESERVA
+- .env / .env.local / .env.production
+- wrangler.jsonc
+- supabase/config.toml
+- secrets existentes
+- backend/migration da RC6.5
+
+PRINCIPAIS AJUSTES
+- status mensalidade verde/amarelo/vermelho no topo
+- amarelo nos 7 dias anteriores ao vencimento
+- clique abre /admin/plano#vencimento
+- FloriWeb passa a concentrar plano + mensalidade + PIX em Meu plano
+- URL antiga /admin/mensalidade redireciona para Meu plano
+- OCR local reforcado sem IA
+- imagens pequenas sao ampliadas antes do OCR
+- segunda leitura de alto contraste ocorre somente quando necessario
+- parser de valor prioriza TOTAL, Valor do documento e Valor cobrado
+- favicon RC6.6 versionado e forcado no build

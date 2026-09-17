@@ -1,0 +1,12 @@
+HOTFIX RC6.11 - RECEBIMENTO E PEDIDOS
+
+Use este pacote se voce JA aplicou a RC6.11 e o PUBLICAR_RC6_11.bat parou no smoke test com:
+- Pedidos possuem atualizacao automatica
+- RC6.8 pedido possui estado de recebimento
+- RC6.8 Orders possui botao Confirmar recebimento
+
+1. Extraia este ZIP na raiz atual do FloriWeb.
+2. Execute CORRIGIR_E_PUBLICAR_RC6_11.bat.
+
+O BAT corrige somente Orders.tsx, types/index.ts e rc611-check.mjs, roda a validacao e chama o PUBLICAR_RC6_11.bat existente.
+Nao altera .env, Supabase, Turnstile, wrangler.jsonc ou migrations.
