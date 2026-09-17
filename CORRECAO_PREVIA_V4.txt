@@ -1,0 +1,16 @@
+FloriWeb RC6.11 PREVIA V4
+
+Ajustes adicionais sobre a V3:
+- Menu "Outros dias" agora usa popover controlado pelo React.
+- Clique fora do menu fecha automaticamente.
+- Tecla ESC fecha o menu.
+- Z-index corrigido para o quadro de horarios ficar acima das categorias/produtos.
+- Mantem a pesquisa da vitrine e demais ajustes da RC6.11.
+
+ADMIN / TURNSTILE
+O acesso ao Admin na URL de previa exige que o hostname da previa seja autorizado
+no mesmo widget Turnstile usado em producao:
+
+floriweb-preview-rc611.joseluizacama.workers.dev
+
+Nao troque a site key nem o secret. Apenas adicione o hostname no widget existente.

@@ -1,0 +1,24 @@
+FloriWeb V3 RC6.11 - PRODUCAO DIRETA V2 CORRIGIDA
+
+1. Extraia o ZIP diretamente na raiz atual do FloriWeb.
+2. Execute APLICAR_RC6_11_NA_RAIZ.bat.
+3. Opcional: execute TESTAR_LOCALHOST_RC6_11.bat para conferencia local.
+4. Execute PUBLICAR_RC6_11.bat para publicar no Worker de producao configurado no wrangler.jsonc existente.
+
+NAO ha migration nova nesta versao.
+NAO altere .env, Turnstile, Supabase ou wrangler.jsonc para aplicar este pacote.
+
+Correcao V2:
+- Preserva OrderPaymentStatus da RC6.8.
+- Preserva Confirmar recebimento do pedido.
+- Preserva atualizacao automatica dos pedidos a cada 15 segundos/foco/visibilidade.
+- Mantem os novos filtros, ordenacao e destaque do pedido vindo do Financeiro.
+
+Principais ajustes RC6.11:
+- PIX Copia e Cola com acao de copiar mais clara.
+- Filtros e ordenacao em Pedidos.
+- Financeiro abre o pedido relacionado com destaque.
+- Horario mostra hoje e permite abrir os demais dias.
+- Popover de horarios fecha ao clicar fora ou pressionar ESC e fica acima do conteudo.
+- Pausa de almoco configuravel por dia.
+- Admin Master com tratamento visual para nomes/e-mails longos.

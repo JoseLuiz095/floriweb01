@@ -1,45 +1,79 @@
-import { CheckCircle2, CloudCog, Database, RefreshCw, ShieldCheck, Store, TriangleAlert } from 'lucide-react';
+import { Activity, CheckCircle2, CloudCog, Database, RefreshCw, ShieldCheck, Store, TriangleAlert } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import packageJson from '../../../package.json';
 import type { EdgeFunctionHealth } from '../../lib/supabaseRest';
+import type { PlatformEventLog } from '../../services/interactionTelemetry';
 import { platformApi } from '../../services/platformApi';
 import type { PlatformSystemCheck } from '../../types';
 
 const numberLabel = (value: number) => new Intl.NumberFormat('pt-BR').format(value);
+const dateTime = (value: string) => new Date(value).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'medium' });
+const actionLabel = (value: string) => ({
+  subscription_renewal_confirm: 'Confirmar renovação',
+  subscription_plan_change_confirm: 'Confirmar alteração de plano',
+  subscription_renewal_reject: 'Negar renovação',
+  subscription_plan_change_reject: 'Negar alteração de plano',
+  subscription_renewal_confirmed: 'Renovação confirmada no banco',
+  subscription_plan_change_confirmed: 'Alteração de plano confirmada no banco',
+  subscription_renewal_rejected: 'Renovação negada no banco',
+  subscription_plan_change_rejected: 'Alteração de plano negada no banco',
+  order_payment_confirmed: 'Recebimento de pedido confirmado',
+  store_credentials_updated: 'Credenciais do lojista alteradas',
+  window_error: 'Erro global do navegador',
+  unhandled_promise_rejection: 'Falha assíncrona não tratada',
+}[value] || value.replaceAll('_', ' '));
+
+
+// FloriWeb RC6.11 - cobranca pendente nao e falha critica
+const isExpectedSubscriptionPending = (item: unknown) => {
+  const text = JSON.stringify(item ?? {})
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  return text.includes('subscription charge create')
+    && text.includes('ja existe um comprovante aguardando analise do admin master');
+};
+
+const sanitizeDiagnosticResult = (value: PlatformSystemCheck): PlatformSystemCheck => {
+  const clone = { ...value } as PlatformSystemCheck & Record<string, unknown>;
+  for (const key of Object.keys(clone)) {
+    if (!/(fail|error)/i.test(key)) continue;
+    const current = clone[key];
+    if (Array.isArray(current)) {
+      clone[key] = current.filter((item) => !isExpectedSubscriptionPending(item));
+    }
+  }
+  return clone;
+};
 
 export default function MasterDiagnostics(){
   const [result,setResult]=useState<PlatformSystemCheck|null>(null);
   const [functionHealth,setFunctionHealth]=useState<EdgeFunctionHealth|null>(null);
   const [checkoutHealth,setCheckoutHealth]=useState<EdgeFunctionHealth|null>(null);
+  const [events,setEvents]=useState<PlatformEventLog[]>([]);
   const [functionError,setFunctionError]=useState('');
   const [checkoutError,setCheckoutError]=useState('');
+  const [eventsError,setEventsError]=useState('');
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState('');
 
   const run=async()=>{
-    setLoading(true);setError('');setFunctionError('');setCheckoutError('');
-    const [databaseResult, edgeResult, checkoutResult] = await Promise.allSettled([
+    setLoading(true);setError('');setFunctionError('');setCheckoutError('');setEventsError('');
+    const [databaseResult, edgeResult, checkoutResult, eventResult] = await Promise.allSettled([
       platformApi.systemCheck(),
       platformApi.createStoreFunctionHealth(),
       platformApi.publicCheckoutFunctionHealth(),
+      platformApi.listPlatformEvents({ limit: 180 }),
     ]);
 
-    if (databaseResult.status === 'fulfilled') setResult(databaseResult.value);
-    else {
-      setResult(null);
-      setError(databaseResult.reason instanceof Error ? databaseResult.reason.message : 'Falha ao executar diagnóstico do banco.');
-    }
-
+    if (databaseResult.status === 'fulfilled') setResult(sanitizeDiagnosticResult(databaseResult.value));
+    else { setResult(null); setError(databaseResult.reason instanceof Error ? databaseResult.reason.message : 'Falha ao executar diagnóstico do banco.'); }
     if (edgeResult.status === 'fulfilled') setFunctionHealth(edgeResult.value);
-    else {
-      setFunctionHealth(null);
-      setFunctionError(edgeResult.reason instanceof Error ? edgeResult.reason.message : 'Não foi possível validar a Edge Function de criação de lojas.');
-    }
-
+    else { setFunctionHealth(null); setFunctionError(edgeResult.reason instanceof Error ? edgeResult.reason.message : 'Não foi possível validar a Edge Function de criação de lojas.'); }
     if (checkoutResult.status === 'fulfilled') setCheckoutHealth(checkoutResult.value);
-    else {
-      setCheckoutHealth(null);
-      setCheckoutError(checkoutResult.reason instanceof Error ? checkoutResult.reason.message : 'Não foi possível validar o checkout público.');
-    }
+    else { setCheckoutHealth(null); setCheckoutError(checkoutResult.reason instanceof Error ? checkoutResult.reason.message : 'Não foi possível validar o checkout público.'); }
+    if (eventResult.status === 'fulfilled') setEvents(eventResult.value);
+    else { setEvents([]); setEventsError(eventResult.reason instanceof Error ? eventResult.reason.message : 'Não foi possível consultar o registro de interações.'); }
     setLoading(false);
   };
   useEffect(()=>{void run()},[]);
@@ -64,38 +98,37 @@ export default function MasterDiagnostics(){
     {label:'Agendamento automático da Demo',value:result.demoCronScheduled?`Ativo${result.demoCronSchedule?` · ${result.demoCronSchedule}`:''}`:(result.demoCronExists?'Inativo':'Verificar'),ok:Boolean(result.demoCronScheduled)},
   ]:[],[result]);
 
+  const failures=useMemo(()=>events.filter((event)=>event.result==='error').slice(0,20),[events]);
+  const audits=useMemo(()=>events.filter((event)=>event.kind==='audit'&&event.result==='success').slice(0,20),[events]);
+  const unfinished=useMemo(()=>{
+    const terminal=new Set(events.filter((event)=>event.correlationId&&['success','error'].includes(event.result)).map((event)=>event.correlationId));
+    const threshold=Date.now()-15_000;
+    return events.filter((event)=>event.result==='started'&&event.correlationId&&!terminal.has(event.correlationId)&&new Date(event.createdAt).getTime()<threshold).slice(0,20);
+  },[events]);
+
   return <>
-    <div className="admin-page-title"><div><span className="eyebrow">DIAGNÓSTICO</span><h1>Saúde da plataforma</h1><p>Validação do banco, MFA do Admin Master e serviços necessários para vender e operar novas lojas.</p></div><button className="secondary-button" onClick={()=>void run()} disabled={loading}><RefreshCw size={17}/>{loading?'Validando...':'Executar novamente'}</button></div>
+    <div className="admin-page-title"><div><span className="eyebrow">DIAGNÓSTICO</span><h1>Saúde e interações da plataforma</h1><p>Banco, Edge Functions e o histórico técnico dos cliques importantes. Erros passam a ficar registrados para não depender da memória do usuário.</p></div><button type="button" className="secondary-button" onClick={()=>void run()} disabled={loading}><RefreshCw size={17}/>{loading?'Validando...':'Executar novamente'}</button></div>
 
-    {error&&<section className="admin-card diagnostic-error"><TriangleAlert size={22}/><div><strong>Falha no diagnóstico do banco</strong><p>{error}</p><small>Confirme se o bundle RC2 foi aplicado e se a sessão do Master já atingiu AAL2.</small></div></section>}
+    {error&&<section className="admin-card diagnostic-error"><TriangleAlert size={22}/><div><strong>Falha no diagnóstico do banco</strong><p>{error}</p><small>Confirme se as migrations foram aplicadas e se a sessão do Master já atingiu AAL2.</small></div></section>}
 
-    <section className={`admin-card edge-function-status ${functionHealth?.ok ? 'ok' : 'error'}`}>
-      <CloudCog size={24}/>
-      <div>
-        <span className="eyebrow">CRIAÇÃO AUTOMÁTICA DE LOJAS</span>
-        <h2>Edge Function platform-create-store</h2>
-        {functionHealth?.ok
-          ? <p><strong>Publicada e respondendo.</strong> Versão {functionHealth.version}. A criação de lojas pode prosseguir.</p>
-          : <><p><strong>Indisponível.</strong> {functionError || 'A função não respondeu.'}</p><div className="diagnostic-command"><code>npx supabase@2.116.0 functions deploy platform-create-store --project-ref SEU_PROJECT_REF</code></div></>}
-      </div>
-    </section>
+    <section className={`admin-card edge-function-status ${functionHealth?.ok ? 'ok' : 'error'}`}><CloudCog size={24}/><div><span className="eyebrow">CRIAÇÃO AUTOMÁTICA DE LOJAS</span><h2>Edge Function platform-create-store</h2>{functionHealth?.ok?<p><strong>Publicada e respondendo.</strong> Versão {functionHealth.version}.</p>:<><p><strong>Indisponível.</strong> {functionError||'A função não respondeu.'}</p><div className="diagnostic-command"><code>npx supabase@2.116.0 functions deploy platform-create-store --project-ref SEU_PROJECT_REF</code></div></>}</div></section>
 
-    <section className={`admin-card edge-function-status ${checkoutHealth?.ok && checkoutHealth.turnstileConfigured && checkoutHealth.turnstileRequired ? 'ok' : 'error'}`}>
-      <ShieldCheck size={24}/>
-      <div>
-        <span className="eyebrow">CHECKOUT PÚBLICO</span>
-        <h2>Edge Function public-checkout + Turnstile</h2>
-        {checkoutHealth?.ok
-          ? <p><strong>Função publicada.</strong> Versão {checkoutHealth.version}. Turnstile: {checkoutHealth.turnstileConfigured?'configurado':'não configurado'} · proteção obrigatória: {checkoutHealth.turnstileRequired?'sim':'não'}.</p>
-          : <p><strong>Indisponível.</strong> {checkoutError || 'A função não respondeu.'}</p>}
-        {(!checkoutHealth?.turnstileConfigured||!checkoutHealth?.turnstileRequired)&&<small>Antes da venda em produção, configure TURNSTILE_SECRET_KEY e TURNSTILE_REQUIRED=true nos Secrets das Edge Functions.</small>}
-      </div>
-    </section>
+    <section className={`admin-card edge-function-status ${checkoutHealth?.ok&&checkoutHealth.turnstileConfigured&&checkoutHealth.turnstileRequired?'ok':'error'}`}><ShieldCheck size={24}/><div><span className="eyebrow">CHECKOUT PÚBLICO</span><h2>public-checkout + Turnstile</h2>{checkoutHealth?.ok?<p><strong>Função publicada.</strong> Versão {checkoutHealth.version}. Turnstile: {checkoutHealth.turnstileConfigured?'configurado':'não configurado'} · proteção obrigatória: {checkoutHealth.turnstileRequired?'sim':'não'}.</p>:<p><strong>Indisponível.</strong> {checkoutError||'A função não respondeu.'}</p>}</div></section>
 
     {result&&<>
-      <section className="admin-card diagnostic-summary"><div className="diagnostic-version"><ShieldCheck size={23}/><div><span className="eyebrow">BANCO CONECTADO</span><strong>Frontend 3.0.0 RC5.2 · Banco {result.version}</strong></div></div><div className="diagnostic-badges"><span><Store size={16}/>{result.storesOnline} online</span><span><Database size={16}/>{result.orders} pedidos</span>{result.demoEnabled===false?<span>Demo desabilitada</span>:result.demoDurationDays&&<span>{result.demoDurationDays} dias de Demo</span>}</div></section>
+      <section className="admin-card diagnostic-summary"><div className="diagnostic-version"><ShieldCheck size={23}/><div><span className="eyebrow">BANCO CONECTADO</span><strong>Frontend {packageJson.version} · Banco {result.version}</strong></div></div><div className="diagnostic-badges"><span><Store size={16}/>{result.storesOnline} online</span><span><Database size={16}/>{result.orders} pedidos</span>{result.demoEnabled===false?<span>Demo desabilitada</span>:result.demoDurationDays&&<span>{result.demoDurationDays} dias de Demo</span>}</div></section>
       <div className="diagnostic-grid">{checks.map((item)=><article className="admin-card diagnostic-check" key={item.label}><span className={item.ok?'diagnostic-ok':'diagnostic-fail'}>{item.ok?<CheckCircle2 size={18}/>:<TriangleAlert size={18}/>}</span><div><small>{item.label}</small><strong>{item.value}</strong></div></article>)}</div>
-      <section className="admin-card master-guidance"><span className="eyebrow">TESTE DE VENDA</span><h2>Fluxo mínimo antes de liberar para cliente</h2><p>Crie uma loja, acesse com o responsável, publique produto, faça um pedido real de teste, abra o WhatsApp e confirme que Analytics registra o funil sem dados pessoais.</p></section>
     </>}
+
+    <section className="admin-card interaction-diagnostics-r69">
+      <div className="admin-card__header"><div><span className="eyebrow">INTERAÇÕES</span><h2>Falhas e ações críticas recentes</h2><p>Não são armazenados senha, token ou conteúdo de documentos. O registro guarda ação, tela, resultado, duração e mensagem técnica sanitizada.</p></div><Activity size={22}/></div>
+      {eventsError?<div className="diagnostic-error-inline-r69"><TriangleAlert size={18}/><span>{eventsError}. Aplique a migration RC6.9 para habilitar esta área.</span></div>:<div className="interaction-diagnostics-grid-r69">
+        <div><h3>Falhas recentes <b>{failures.length}</b></h3>{failures.length?<div className="interaction-event-list-r69">{failures.map((event)=><article key={event.id}><span className="is-error"><TriangleAlert size={16}/></span><div><strong>{actionLabel(event.action)}</strong><small>{event.storeName||'Plataforma'} · {event.route||'sem rota'} · {dateTime(event.createdAt)}</small>{event.errorMessage&&<p>{event.errorMessage}</p>}</div><em>{event.appVersion||'—'}</em></article>)}</div>:<p className="analytics-empty">Nenhuma falha registrada no recorte consultado.</p>}</div>
+        <div><h3>Interações sem conclusão <b>{unfinished.length}</b></h3>{unfinished.length?<div className="interaction-event-list-r69">{unfinished.map((event)=><article key={event.id}><span className="is-warning"><Activity size={16}/></span><div><strong>{actionLabel(event.action)}</strong><small>{event.storeName||'Plataforma'} · iniciou em {dateTime(event.createdAt)}</small><p>Foi registrado o início, mas nenhum sucesso/erro correspondente apareceu. Verifique esta interação.</p></div></article>)}</div>:<p className="analytics-empty">Nenhuma interação aparentemente travada no recorte consultado.</p>}</div>
+        <div className="full"><h3>Auditoria crítica <b>{audits.length}</b></h3>{audits.length?<div className="interaction-event-list-r69 compact">{audits.map((event)=><article key={event.id}><span className="is-success"><CheckCircle2 size={16}/></span><div><strong>{actionLabel(event.action)}</strong><small>{event.storeName||'Plataforma'} · {dateTime(event.createdAt)}</small></div><em>{event.appVersion||'—'}</em></article>)}</div>:<p className="analytics-empty">As próximas confirmações/negações e alterações críticas aparecerão aqui.</p>}</div>
+      </div>}
+    </section>
+
+    <section className="admin-card master-guidance"><span className="eyebrow">ESTABILIZAÇÃO</span><h2>Quando um botão “não fizer nada”</h2><p>Abra esta tela e procure em Interações sem conclusão ou Falhas recentes. A RC6.9 registra automaticamente erros globais e acompanha confirmações/negações de mensalidade para facilitar a investigação.</p></section>
   </>;
 }

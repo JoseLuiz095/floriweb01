@@ -1,0 +1,16 @@
+FloriWeb V3 RC6.9 - HOTFIX PlatformHelpButton / TypeScript
+
+Motivo:
+O PlatformHelpButton antigo ainda acessava supportWhatsapp e marketingWhatsapp
+atraves de PublicLanding. O tipo PublicLanding da RC6.9 nao expoe mais esses campos.
+
+Correcao:
+- PlatformHelpButton passa a usar loadAdminSupportContact().
+- O telefone de suporte vem do RPC autenticado get_admin_support_contact_v1.
+- Nao reexpoe telefone na landing publica.
+- Nenhuma migration nova e necessaria; o RPC ja pertence a RC6.3.
+
+Uso:
+1. Extraia este ZIP na raiz atual do FloriWeb RC6.9.
+2. Execute CORRIGIR_E_PUBLICAR_RC6_9.bat.
+3. O BAT roda o typecheck e, se passar, chama PUBLICAR_RC6_9.bat.
