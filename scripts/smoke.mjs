@@ -41,7 +41,16 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.11', packageJson.version === '3.0.0-rc.6.11');
+ok('Versao V3 RC6.12', packageJson.version === '3.0.0-rc.6.12');
+const selfSignup = read('src/pages/store/SelfSignup.tsx');
+const selfSignupService = read('src/services/selfServiceSignup.ts');
+const signupRequests = read('src/pages/master/SignupRequests.tsx');
+const mRc612 = read('supabase/migrations/202609171945_floriweb_rc612_self_service_signup.sql');
+ok('RC6.12 auto cadastro publico', app.includes('path=\"/cadastro\"') && selfSignup.includes('Criar nova conta'));
+ok('RC6.12 Demo com elegibilidade cadastral', exists('supabase/migrations/202609180800_floriweb_rc612_trial_eligibility_hardening.sql') && selfSignup.includes('validação cadastral do negócio') && selfSignupService.includes('complete_self_service_signup_v2'));
+ok('RC6.12 workspace pendente protegido', mRc612.includes("s.approval_status='pending'") && auth.includes('pendingWorkspace') && app.includes('preparationRouteAllowed') && adminLayout.includes('preparationNavAllowed') && adminLayout.includes('self-service-approval-banner'));
+ok('RC6.12 Master aprova auto cadastro', signupRequests.includes('Liberar') && selfSignupService.includes('platform_approve_self_service_signup_v2'));
+
 
 const billingApi = read('src/services/billingFinanceApi.ts');
 const adminBilling = read('src/pages/admin/Billing.tsx');

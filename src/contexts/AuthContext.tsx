@@ -9,9 +9,9 @@ const STORE_SELECTION_KEY = 'floriweb.admin.selected-store.v3';
 export const DEMO_CREDENTIALS = { email: 'admin@floriweb.demo', password: 'Flori@2026' };
 
 export type SignInScope = 'any' | 'store' | 'platform';
-export type Membership = { id: string; storeId: string; role: Role; active: boolean; storeName?: string; mustChangePassword: boolean };
+export type Membership = { id: string; storeId: string; role: Role; active: boolean; storeName?: string; mustChangePassword: boolean; approvalStatus?: 'pending' | 'approved' | 'rejected'; limitedAccess?: boolean };
 type StoreUserRow = { id: string; store_id: string; user_id: string; role: Role; active: boolean; must_change_password?: boolean };
-type StoreRow = { id: string; name: string; active: boolean; access_status?: 'online' | 'suspended' };
+type StoreRow = { id: string; name: string; active: boolean; access_status?: 'online' | 'suspended'; approval_status?: 'pending' | 'approved' | 'rejected' };
 type PlatformAdminRow = { id: string; user_id: string; name: string; active: boolean };
 type LoadedAccess = { memberships: Membership[]; membership: Membership | null; platformAdmin: PlatformAdmin | null };
 export type MfaLevel = 'aal1' | 'aal2' | null;
@@ -83,11 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let nextMemberships: Membership[] = [];
     if (eligibleRows.length) {
       const ids = eligibleRows.map((row) => row.store_id).join(',');
-      const stores = await restFetch<StoreRow[]>(`stores?select=id,name,active,access_status&id=in.(${ids})&order=name.asc`);
+      const stores = await restFetch<StoreRow[]>(`stores?select=id,name,active,access_status,approval_status&id=in.(${ids})&order=name.asc`);
       const byId = new Map(stores.map((store) => [store.id, store]));
       nextMemberships = eligibleRows.flatMap((row) => {
         const store = byId.get(row.store_id);
-        if (!store?.active || (store.access_status ?? 'online') !== 'online') return [];
+        if (!store?.active) return [];
+        const pendingWorkspace = store.approval_status === 'pending';
+        if ((store.access_status ?? 'online') !== 'online' && !pendingWorkspace) return [];
         return [{
           id: row.id,
           storeId: row.store_id,
@@ -95,7 +97,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           active: row.active,
           storeName: store.name,
           mustChangePassword: Boolean(row.must_change_password),
-        }];
+                  approvalStatus: store.approval_status || 'approved',
+                  limitedAccess: store.approval_status === 'pending' && (store.access_status ?? 'online') !== 'online',
+                }];
       }).sort((a, b) => (a.storeName || '').localeCompare(b.storeName || '', 'pt-BR'));
     }
 

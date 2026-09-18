@@ -1,0 +1,25 @@
+FLORIWEB V3 RC6.12 - AUTO CADASTRO / REV2
+
+CORRECOES DESTA REVISAO
+1. Corrige a falha do aplicador: "Nao encontrei ponto de ajuste: map approval status".
+   O novo script usa correspondencia tolerante a LF/CRLF e ao formato atual do RC6.11.
+2. O Demo nao depende apenas do e-mail. A elegibilidade passa a considerar:
+   - e-mail;
+   - WhatsApp comercial;
+   - CNPJ, quando informado.
+   As chaves de elegibilidade sao gravadas como SHA-256 no banco.
+3. A reserva definitiva da elegibilidade acontece somente quando o Admin Master aprova o cadastro.
+4. O texto publico nao revela o criterio tecnico de bloqueio. Mostra apenas que o teste esta sujeito a validacao cadastral.
+
+APLICACAO
+1. Extraia este pacote na raiz do FloriWeb RC6.11.
+2. Execute APLICAR_FLORIWEB_RC612_SELF_SERVICE_REV2.bat.
+3. No Supabase SQL Editor execute, nesta ordem:
+   a) supabase/migrations/202609171945_floriweb_rc612_self_service_signup.sql
+   b) supabase/migrations/202609180800_floriweb_rc612_trial_eligibility_hardening.sql
+   c) supabase/VALIDAR_RC612_REV2.sql
+4. Todos os campos da validacao devem retornar true.
+5. Execute npm run validate.
+
+TURNSTILE
+FloriWeb e FoodWeb usam o mesmo projeto Supabase Auth. Portanto o CAPTCHA do Auth deve usar um unico par site key/secret compativel com os dois dominios. Como o FloriWeb ja esta funcionando, mantenha o Secret atual do Supabase e use a mesma Site Key do widget funcional no FoodWeb, adicionando foodweb.joseluizacama.workers.dev aos hostnames permitidos no widget.

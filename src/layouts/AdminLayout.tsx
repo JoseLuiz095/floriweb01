@@ -14,6 +14,7 @@ import {
   Puzzle,
   Rocket,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Tags,
   Truck,
@@ -151,7 +152,8 @@ export default function AdminLayout() {
         )}
         <nav className="admin-nav">
           {navSections.map((section) => {
-            const items = section.items.filter((item: any) => !item.requiresReports || planUsage.plan.reports);
+            const preparationNavAllowed = new Set(['/admin','/admin/primeiros-passos','/admin/produtos','/admin/categorias','/admin/adicionais','/admin/entregas','/admin/configuracoes']);
+            const items = section.items.filter((item: any) => (!item.requiresReports || planUsage.plan.reports) && (!membership?.limitedAccess || preparationNavAllowed.has(item.to)));
             return (
               <div className="admin-nav__group" key={section.label}>
                 <span className="admin-nav__label">{section.label}</span>
@@ -199,6 +201,7 @@ export default function AdminLayout() {
             <div className="admin-user"><span>{(user?.email || 'AD').slice(0, 2).toUpperCase()}</span><div><strong>{membership?.storeName || 'Administrador'}</strong><small>{user?.email}</small></div></div>
           </div>
         </header>
+        {membership?.approvalStatus === 'pending' && <div className="self-service-approval-banner is-limited"><ShieldCheck size={18}/><div><strong>Cadastro em preparação</strong><span>Você pode configurar catálogo, identidade, entregas e configurações. Pedidos, Analytics, Financeiro, cobrança e a vitrine ficam bloqueados até a aprovação do Admin Master.</span></div></div>}
         <div className="admin-page"><div key={`${location.pathname}:${membership?.storeId || 'none'}`}><Outlet /></div></div>
       </section>
       <PlatformHelpButton />

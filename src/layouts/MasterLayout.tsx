@@ -1,4 +1,4 @@
-import { ExternalLink, LayoutDashboard, LogOut, Menu, Package2, Settings2, ShieldCheck, X } from 'lucide-react';
+import { ExternalLink, LayoutDashboard, LogOut, Menu, Package2, Settings2, ShieldCheck, UserPlus, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import PlatformHelpButton from '../components/PlatformHelpButton';
@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 const nav = [
   { to: '/admin-master', label: 'Visão geral', icon: LayoutDashboard, end: true },
   { to: '/admin-master/lojas', label: 'Lojas e clientes', icon: Package2 },
+  { to: '/admin-master/solicitacoes', label: 'Solicitações', icon: UserPlus },
   { to: '/admin-master/planos', label: 'Planos', icon: Settings2 },
   { to: '/admin-master/pagamentos', label: 'Pagamentos', icon: Settings2 },
   { to: '/admin-master/diagnostico', label: 'Diagnóstico', icon: Settings2 },
