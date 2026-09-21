@@ -41,7 +41,7 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.12', packageJson.version === '3.0.0-rc.6.12');
+ok('Versao V3 RC6.13', packageJson.version === '3.0.0-rc.6.13');
 const selfSignup = read('src/pages/store/SelfSignup.tsx');
 const selfSignupService = read('src/services/selfServiceSignup.ts');
 const signupRequests = read('src/pages/master/SignupRequests.tsx');
@@ -249,8 +249,15 @@ ok('RC6.10 Business aparece na landing', landingPlansRc610.includes('flori-busin
 ok('RC6.10 Master explica Business e acesso principal', masterPlansRc610.includes('Business · valor sob consulta') && masterPlansRc610.includes('Usuarios administrativos adicionais permanecem fora do escopo atual'));
 ok('RC6.10 migration fixa acesso principal e preserva dominio Premium', planMigrationRc610.includes('admin_user_limit = 1') && planMigrationRc610.includes("code = 'PREMIUM'") && planMigrationRc610.includes('custom_domain = true'));
 
+
+const interactiveRc613=read('src/components/marketing/InteractiveShowcase.tsx');
+const marketRc613=read('supabase/migrations/202609211610_floriweb_rc613_market_positioning.sql');
+ok('RC6.13 demonstracao cliente + gestao', landingPlansRc610.includes('InteractiveShowcase') && interactiveRc613.includes('Experiência do cliente') && interactiveRc613.includes('Painel de gestão'));
+ok('RC6.13 precos introdutorios', marketRc613.includes("when 'BASIC' then 39.90") && marketRc613.includes("when 'PREMIUM' then 119.90"));
+ok('RC6.13 Demo futuro de 14 dias', marketRc613.includes('demo_duration_days=14'));
+
 if(failures.length){console.error(`\n${failures.length} falha(s):`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
-console.log(`\nSmoke test concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
+console.log(`\nSmoke test RC6.13 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
 
 // RC6.11 - acabamento para producao
 const settingsRc611 = read('src/pages/admin/Settings.tsx');
