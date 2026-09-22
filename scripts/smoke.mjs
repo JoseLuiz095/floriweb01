@@ -41,7 +41,7 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.13', packageJson.version === '3.0.0-rc.6.13');
+ok('Versao V3 RC6.14', packageJson.version === '3.0.0-rc.6.14');
 const selfSignup = read('src/pages/store/SelfSignup.tsx');
 const selfSignupService = read('src/services/selfServiceSignup.ts');
 const signupRequests = read('src/pages/master/SignupRequests.tsx');
@@ -256,8 +256,19 @@ ok('RC6.13 demonstracao cliente + gestao', landingPlansRc610.includes('Interacti
 ok('RC6.13 precos introdutorios', marketRc613.includes("when 'BASIC' then 39.90") && marketRc613.includes("when 'PREMIUM' then 119.90"));
 ok('RC6.13 Demo futuro de 14 dias', marketRc613.includes('demo_duration_days=14'));
 
+
+const interactiveRc614=read('src/components/marketing/InteractiveShowcase.tsx');
+const valueRc614=read('src/components/marketing/ExistingValueSection.tsx');
+const landingRc614=read('src/pages/store/Landing.tsx');
+ok('RC6.14 pedido demo localStorage',interactiveRc614.includes('floriweb_interactive_demo_rc614')&&interactiveRc614.includes('Finalizar pedido demonstrativo')&&interactiveRc614.includes('Ver no painel de gestão'));
+ok('RC6.14 pedido aparece na gestao',interactiveRc614.includes('setOrders((current)=>[order,...current])')&&interactiveRc614.includes('Confirmar recebimento')&&interactiveRc614.includes('sent_to_whatsapp'));
+ok('RC6.14 CTAs priorizam auto cadastro',landingRc614.includes('Criar conta e testar')&&landingRc614.includes('href="#demonstracao"')&&landingRc614.includes('flori-plan-self-service--primary'));
+ok('RC6.14 remove demo estatica e texto explicativo',!landingRc614.includes('demonstracao-legado')&&!interactiveRc614.includes('Não é um slide:'));
+ok('RC6.14 valor real do produto',valueRc614.includes('Pedido pensado para presente')&&valueRc614.includes('Entrega programada')&&valueRc614.includes('Financeiro com recebimento confirmado'));
+ok('RC6.14 fallback global de produto',read('public/assets/placeholder-flower.svg').includes('PRODUCT_IMAGE_FALLBACK_RC614'));
+
 if(failures.length){console.error(`\n${failures.length} falha(s):`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
-console.log(`\nSmoke test RC6.13 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
+console.log(`\nSmoke test RC6.14 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
 
 // RC6.11 - acabamento para producao
 const settingsRc611 = read('src/pages/admin/Settings.tsx');
