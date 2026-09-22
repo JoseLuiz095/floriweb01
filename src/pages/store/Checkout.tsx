@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
-import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
+import { ProductMedia } from '../../components/ProductMedia';
 import { TurnstileWidget } from '../../components/ui/TurnstileWidget';
 import { cartItemUnitTotal, useCart } from '../../contexts/CartContext';
 import { useStore } from '../../contexts/StoreContext';
@@ -686,7 +686,7 @@ export default function Checkout() {
           <div className="checkout-summary-items">
             {items.map((item) => (
               <article className="summary-product summary-product--rich" key={item.id}>
-                <ImageWithFallback src={item.imageUrl} alt={item.productName} />
+                <ProductMedia imageUrl={item.imageUrl} visualEmoji={item.visualEmoji} alt={item.productName} wrapperClassName="checkout-product-media"/>
                 <div className="summary-product__content">
                   <div className="summary-product__title"><strong>{item.productName}</strong><span>{item.quantity}x</span></div>
                   {item.variation && <span>Variação: {item.variation.name}</span>}

@@ -41,7 +41,7 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.14', packageJson.version === '3.0.0-rc.6.14');
+ok('Versao V3 RC6.16', packageJson.version === '3.0.0-rc.6.16');
 const selfSignup = read('src/pages/store/SelfSignup.tsx');
 const selfSignupService = read('src/services/selfServiceSignup.ts');
 const signupRequests = read('src/pages/master/SignupRequests.tsx');
@@ -260,15 +260,25 @@ ok('RC6.13 Demo futuro de 14 dias', marketRc613.includes('demo_duration_days=14'
 const interactiveRc614=read('src/components/marketing/InteractiveShowcase.tsx');
 const valueRc614=read('src/components/marketing/ExistingValueSection.tsx');
 const landingRc614=read('src/pages/store/Landing.tsx');
-ok('RC6.14 pedido demo localStorage',interactiveRc614.includes('floriweb_interactive_demo_rc614')&&interactiveRc614.includes('Finalizar pedido demonstrativo')&&interactiveRc614.includes('Ver no painel de gestão'));
+ok('RC6.16 pedido demo localStorage',interactiveRc614.includes('floriweb_interactive_demo_rc616')&&interactiveRc614.includes('Finalizar pedido demonstrativo')&&interactiveRc614.includes('Ver no painel de gestão'));
 ok('RC6.14 pedido aparece na gestao',interactiveRc614.includes('setOrders((current)=>[order,...current])')&&interactiveRc614.includes('Confirmar recebimento')&&interactiveRc614.includes('sent_to_whatsapp'));
-ok('RC6.14 CTAs priorizam auto cadastro',landingRc614.includes('Criar conta e testar')&&landingRc614.includes('href="#demonstracao"')&&landingRc614.includes('flori-plan-self-service--primary'));
+ok('RC6.15 CTA principal preserva teste',landingRc614.includes('Criar conta e testar')&&landingRc614.includes('href="#demonstracao"'));
+ok('RC6.15 remove CTA criar conta duplicado',!landingRc614.includes('flori-self-service-nav')&&!landingRc614.includes('flori-self-service-cta'));
+ok('RC6.15 planos usam contato comercial',!landingRc614.includes('flori-plan-self-service--primary')&&landingRc614.includes('flori-plan-contact-v615'));
+ok('RC6.15 Profissional detalhado',landingRc614.includes('Até 40 produtos ativos')&&landingRc614.includes('Até 15 categorias e 40 adicionais')&&landingRc614.includes('Leitura local de documentos financeiros'));
+ok('RC6.15 CTA final WhatsApp',landingRc614.includes('Entrar em contato no WhatsApp')&&landingRc614.includes('flori-sales-final-contact-v615'));
+ok('RC6.15 visual de planos aplicado',styles.includes('FLORIWEB_LANDING_PLANOS_RC615'));
 ok('RC6.14 remove demo estatica e texto explicativo',!landingRc614.includes('demonstracao-legado')&&!interactiveRc614.includes('Não é um slide:'));
 ok('RC6.14 valor real do produto',valueRc614.includes('Pedido pensado para presente')&&valueRc614.includes('Entrega programada')&&valueRc614.includes('Financeiro com recebimento confirmado'));
 ok('RC6.14 fallback global de produto',read('public/assets/placeholder-flower.svg').includes('PRODUCT_IMAGE_FALLBACK_RC614'));
+ok('RC6.16 produto aceita emoji sem foto',read('src/types/index.ts').includes('visualEmoji?: string')&&read('src/pages/admin/ProductForm.tsx').includes('productEmojiOptions')&&read('src/components/ProductMedia.tsx').includes('product-emoji-visual'));
+ok('RC6.16 adicional aceita emoji sem imagem',read('src/pages/admin/Addons.tsx').includes('addonEmojiOptions')&&storeApi.includes('visual_emoji:addon.visualEmoji'));
+ok('RC6.16 storefront publica emoji',read('supabase/migrations/202609221530_floriweb_rc616_visual_emoji.sql').includes("'visual_emoji', p.visual_emoji")&&read('supabase/migrations/202609221530_floriweb_rc616_visual_emoji.sql').includes("'visual_emoji', a.visual_emoji"));
+ok('RC6.16 demonstracao possui complementos reais',interactiveRc614.includes('COMPLEMENTOS')&&interactiveRc614.includes('Chocolate 90g')&&interactiveRc614.includes('Mini pelúcia')&&interactiveRc614.includes('selectedAddons'));
+ok('RC6.16 SQL de validacao existe',exists('supabase/VALIDAR_RC616.sql'));
 
 if(failures.length){console.error(`\n${failures.length} falha(s):`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
-console.log(`\nSmoke test RC6.14 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
+console.log(`\nSmoke test RC6.16 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
 
 // RC6.11 - acabamento para producao
 const settingsRc611 = read('src/pages/admin/Settings.tsx');

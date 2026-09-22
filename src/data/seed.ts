@@ -59,10 +59,10 @@ export const seedDeliveryZones: DeliveryZone[] = linharesZones.map(([name, alias
 }));
 
 export const seedAddons: Addon[] = [
-  { id: '20000000-0000-4000-8000-000000000001', storeId: STORE_ID, name: 'Chocolate 90g', description: 'Chocolate para acompanhar o presente.', price: 18, active: true, imageUrl: '/assets/cesta-afeto.svg' },
-  { id: '20000000-0000-4000-8000-000000000002', storeId: STORE_ID, name: 'Cartão especial', description: 'Cartão premium com mensagem personalizada.', price: 8, active: true, imageUrl: '/assets/bouquet-aurora-2.svg' },
-  { id: '20000000-0000-4000-8000-000000000003', storeId: STORE_ID, name: 'Mini pelúcia', description: 'Mini pelúcia para complementar o presente.', price: 29.9, active: true, imageUrl: '/assets/box-carinho.svg' },
-  { id: '20000000-0000-4000-8000-000000000004', storeId: STORE_ID, name: 'Caneca personalizada', description: 'Caneca para composição de cestas.', price: 34.9, active: true, imageUrl: '/assets/lirio-encanto.svg' },
+  { id: '20000000-0000-4000-8000-000000000001', storeId: STORE_ID, name: 'Chocolate 90g', description: 'Chocolate para acompanhar o presente.', price: 18, active: true, imageUrl: '/assets/cesta-afeto.svg', visualEmoji: '🍫' },
+  { id: '20000000-0000-4000-8000-000000000002', storeId: STORE_ID, name: 'Cartão especial', description: 'Cartão premium com mensagem personalizada.', price: 8, active: true, imageUrl: '/assets/bouquet-aurora-2.svg', visualEmoji: '💌' },
+  { id: '20000000-0000-4000-8000-000000000003', storeId: STORE_ID, name: 'Mini pelúcia', description: 'Mini pelúcia para complementar o presente.', price: 29.9, active: true, imageUrl: '/assets/box-carinho.svg', visualEmoji: '🧸' },
+  { id: '20000000-0000-4000-8000-000000000004', storeId: STORE_ID, name: 'Caneca personalizada', description: 'Caneca para composição de cestas.', price: 34.9, active: true, imageUrl: '/assets/lirio-encanto.svg', visualEmoji: '🎁' },
 ];
 
 const product = (input: Partial<Product> & Pick<Product, 'id' | 'slug' | 'name' | 'description' | 'categoryId' | 'price' | 'imageUrl'>): Product => ({
@@ -85,7 +85,7 @@ export const seedProducts: Product[] = [
     id: '30000000-0000-4000-8000-000000000001', slug: 'buque-aurora', name: 'Buquê Aurora',
     description: 'Composição alegre com flores selecionadas em tons vibrantes. Ideal para aniversários, agradecimentos e momentos especiais.',
     categoryId: seedCategories[0].id, price: 149.9, promotionalPrice: 129.9,
-    imageUrl: '/assets/bouquet-aurora.svg', gallery: ['/assets/bouquet-aurora.svg', '/assets/bouquet-aurora-2.svg'],
+    imageUrl: '/assets/bouquet-aurora.svg', visualEmoji: '💐', gallery: ['/assets/bouquet-aurora.svg', '/assets/bouquet-aurora-2.svg'],
     images: [
       { id: '31000000-0000-4000-8000-000000000001', productId: '30000000-0000-4000-8000-000000000001', url: '/assets/bouquet-aurora.svg', sortOrder: 0, isPrimary: true, altText: 'Buquê Aurora' },
       { id: '31000000-0000-4000-8000-000000000002', productId: '30000000-0000-4000-8000-000000000001', url: '/assets/bouquet-aurora-2.svg', sortOrder: 1, isPrimary: false, altText: 'Buquê Aurora - detalhe' },
@@ -101,7 +101,7 @@ export const seedProducts: Product[] = [
   product({
     id: '30000000-0000-4000-8000-000000000002', slug: 'lirio-encanto', name: 'Lírio Encanto',
     description: 'Arranjo delicado com lírios e folhagens, montado em embalagem de acabamento premium.',
-    categoryId: seedCategories[2].id, price: 119.9, imageUrl: '/assets/lirio-encanto.svg', featured: true,
+    categoryId: seedCategories[2].id, price: 119.9, imageUrl: '/assets/lirio-encanto.svg', visualEmoji: '🪻', featured: true,
     variations: [
       { id: '32000000-0000-4000-8000-000000000004', name: 'Branco', priceDelta: 0, active: true, sortOrder: 10 },
       { id: '32000000-0000-4000-8000-000000000005', name: 'Rosa', priceDelta: 0, active: true, sortOrder: 20 },
@@ -110,7 +110,7 @@ export const seedProducts: Product[] = [
   product({
     id: '30000000-0000-4000-8000-000000000003', slug: 'rosas-doze', name: '12 Rosas Clássicas',
     description: 'Doze rosas frescas com folhagens e acabamento elegante para surpreender em qualquer ocasião.',
-    categoryId: seedCategories[1].id, price: 169.9, imageUrl: '/assets/rosas-doze.svg', stockLabel: 'Últimas unidades', stockStatus: 'low_stock',
+    categoryId: seedCategories[1].id, price: 169.9, imageUrl: '/assets/rosas-doze.svg', visualEmoji: '🌹', stockLabel: 'Últimas unidades', stockStatus: 'low_stock',
     variations: [
       { id: '32000000-0000-4000-8000-000000000006', name: 'Vermelhas', priceDelta: 0, active: true, sortOrder: 10 },
       { id: '32000000-0000-4000-8000-000000000007', name: 'Rosas', priceDelta: 0, active: true, sortOrder: 20 },
@@ -120,7 +120,7 @@ export const seedProducts: Product[] = [
   product({
     id: '30000000-0000-4000-8000-000000000004', slug: 'box-carinho', name: 'Box Carinho',
     description: 'Flores, chocolates e uma apresentação pronta para presentear. Uma escolha prática e marcante.',
-    categoryId: seedCategories[3].id, price: 189.9, imageUrl: '/assets/box-carinho.svg', featured: true,
+    categoryId: seedCategories[3].id, price: 189.9, imageUrl: '/assets/box-carinho.svg', visualEmoji: '💝', featured: true,
     variations: [
       { id: '32000000-0000-4000-8000-000000000009', name: 'Tradicional', priceDelta: 0, active: true, sortOrder: 10 },
       { id: '32000000-0000-4000-8000-000000000010', name: 'Com pelúcia', priceDelta: 35, active: true, sortOrder: 20 },
@@ -129,7 +129,7 @@ export const seedProducts: Product[] = [
   product({
     id: '30000000-0000-4000-8000-000000000005', slug: 'buque-noiva-classico', name: 'Buquê de Noiva Clássico',
     description: 'Buquê personalizado para casamento, desenvolvido de acordo com referências, paleta de cores e estilo da cerimônia.',
-    categoryId: seedCategories[4].id, price: 320, imageUrl: '/assets/noiva-classico.svg',
+    categoryId: seedCategories[4].id, price: 320, imageUrl: '/assets/noiva-classico.svg', visualEmoji: '🤍',
     gallery: ['/assets/noiva-classico.svg', '/assets/noiva-classico-2.svg'],
     images: [
       { id: '31000000-0000-4000-8000-000000000003', productId: '30000000-0000-4000-8000-000000000005', url: '/assets/noiva-classico.svg', sortOrder: 0, isPrimary: true, altText: 'Buquê de noiva clássico' },
@@ -142,9 +142,9 @@ export const seedProducts: Product[] = [
       { id: '32000000-0000-4000-8000-000000000013', name: 'Grinalda', priceDelta: -180, active: true, sortOrder: 30 },
     ],
   }),
-  product({ id: '30000000-0000-4000-8000-000000000006', slug: 'girassol-luz', name: 'Girassol Luz', description: 'Composição vibrante de girassóis com folhagens naturais e embalagem kraft.', categoryId: seedCategories[2].id, price: 109.9, imageUrl: '/assets/girassol-luz.svg', variations: [{ id: '32000000-0000-4000-8000-000000000014', name: '3 girassóis', priceDelta: 0, active: true, sortOrder: 10 }, { id: '32000000-0000-4000-8000-000000000015', name: '6 girassóis', priceDelta: 55, active: true, sortOrder: 20 }] }),
-  product({ id: '30000000-0000-4000-8000-000000000007', slug: 'rosa-unitaria-premium', name: 'Rosa Unitária Premium', description: 'Uma rosa selecionada com acabamento refinado e cartão para uma lembrança elegante.', categoryId: seedCategories[1].id, price: 39.9, imageUrl: '/assets/rosa-unitaria.svg', variations: [{ id: '32000000-0000-4000-8000-000000000016', name: 'Vermelha', priceDelta: 0, active: true, sortOrder: 10 }, { id: '32000000-0000-4000-8000-000000000017', name: 'Rosa', priceDelta: 0, active: true, sortOrder: 20 }, { id: '32000000-0000-4000-8000-000000000018', name: 'Champagne', priceDelta: 0, active: true, sortOrder: 30 }] }),
-  product({ id: '30000000-0000-4000-8000-000000000008', slug: 'cesta-afeto', name: 'Cesta Afeto', description: 'Cesta com flores, doces e itens delicadamente organizados para presentear com afeto.', categoryId: seedCategories[3].id, price: 219.9, imageUrl: '/assets/cesta-afeto.svg', addons: [seedAddons[1], seedAddons[3]] }),
+  product({ id: '30000000-0000-4000-8000-000000000006', slug: 'girassol-luz', name: 'Girassol Luz', description: 'Composição vibrante de girassóis com folhagens naturais e embalagem kraft.', categoryId: seedCategories[2].id, price: 109.9, imageUrl: '/assets/girassol-luz.svg', visualEmoji: '🌻', variations: [{ id: '32000000-0000-4000-8000-000000000014', name: '3 girassóis', priceDelta: 0, active: true, sortOrder: 10 }, { id: '32000000-0000-4000-8000-000000000015', name: '6 girassóis', priceDelta: 55, active: true, sortOrder: 20 }] }),
+  product({ id: '30000000-0000-4000-8000-000000000007', slug: 'rosa-unitaria-premium', name: 'Rosa Unitária Premium', description: 'Uma rosa selecionada com acabamento refinado e cartão para uma lembrança elegante.', categoryId: seedCategories[1].id, price: 39.9, imageUrl: '/assets/rosa-unitaria.svg', visualEmoji: '🌹', variations: [{ id: '32000000-0000-4000-8000-000000000016', name: 'Vermelha', priceDelta: 0, active: true, sortOrder: 10 }, { id: '32000000-0000-4000-8000-000000000017', name: 'Rosa', priceDelta: 0, active: true, sortOrder: 20 }, { id: '32000000-0000-4000-8000-000000000018', name: 'Champagne', priceDelta: 0, active: true, sortOrder: 30 }] }),
+  product({ id: '30000000-0000-4000-8000-000000000008', slug: 'cesta-afeto', name: 'Cesta Afeto', description: 'Cesta com flores, doces e itens delicadamente organizados para presentear com afeto.', categoryId: seedCategories[3].id, price: 219.9, imageUrl: '/assets/cesta-afeto.svg', visualEmoji: '🧺', addons: [seedAddons[1], seedAddons[3]] }),
 ];
 
 export const seedSettings: StoreSettings = {

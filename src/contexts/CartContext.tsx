@@ -49,7 +49,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addItem: (product, quantity, variation, addons=[]) => {
       const base=product.promotionalPrice??product.price; const unitPrice=roundMoney(base+(variation?.priceDelta??0));
       const id=[product.id,variation?.id??'base',...addons.map(a=>a.id).sort()].join('|');
-      setItems((current)=>{const existing=current.find((item)=>item.id===id);if(existing)return current.map((item)=>item.id===id?{...item,quantity:item.quantity+quantity}:item);return[...current,{id,productId:product.id,productName:product.name,imageUrl:product.imageUrl,unitPrice,quantity,variation,addons}]});
+      setItems((current)=>{const existing=current.find((item)=>item.id===id);if(existing)return current.map((item)=>item.id===id?{...item,quantity:item.quantity+quantity}:item);return[...current,{id,productId:product.id,productName:product.name,imageUrl:product.imageUrl,visualEmoji:product.visualEmoji,unitPrice,quantity,variation,addons}]});
     },
     updateQuantity:(id,quantity)=>setItems((current)=>current.map((item)=>item.id===id?{...item,quantity:Math.max(1,quantity)}:item)),
     removeItem:(id)=>setItems((current)=>current.filter((item)=>item.id!==id)),
@@ -61,7 +61,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if(item.variation&&!variation)return[];
       const addons=item.addons.map((selected)=>product.addons.find((addon)=>addon.id===selected.id&&addon.active)).filter((addon):addon is Addon=>Boolean(addon));
       const unitPrice=roundMoney((product.promotionalPrice??product.price)+(variation?.priceDelta??0));
-      return[{...item,productName:product.name,imageUrl:product.imageUrl,unitPrice,variation,addons}];
+      return[{...item,productName:product.name,imageUrl:product.imageUrl,visualEmoji:product.visualEmoji,unitPrice,variation,addons}];
     })),
   }),[items,cartKey]);
 

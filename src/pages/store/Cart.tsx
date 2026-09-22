@@ -1,6 +1,6 @@
 import { AlertCircle, ArrowLeft, ArrowRight, Clock3, ShoppingBag, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
-import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
+import { ProductMedia } from '../../components/ProductMedia';
 import { LoadingState } from '../../components/ui/AsyncState';
 import { QuantityControl } from '../../components/QuantityControl';
 import { cartItemUnitTotal, useCart } from '../../contexts/CartContext';
@@ -39,7 +39,7 @@ export default function Cart() {
         <div className="page-title"><span className="eyebrow">SEU PEDIDO</span><h1>Revise os itens</h1><p>Confira produtos, variações e complementos antes de avançar.</p></div>
         {minimumMadeToOrderDate && <div className="made-to-order-cart-warning"><Clock3 size={19}/><div><strong>Seu carrinho tem produto sob encomenda</strong><span>A primeira data disponível para entrega ou retirada é <b>{formatDateBR(minimumMadeToOrderDate)}</b>, considerando o maior prazo de produção ({maxProductionDays} {maxProductionDays===1?'dia':'dias'}){limitingProducts.length ? ` de ${limitingProducts.map((product) => product.name).join(', ')}` : ''}.</span></div></div>}
         <div className="cart-list">{items.map((item) => <article key={item.id} className="cart-item">
-          <ImageWithFallback src={item.imageUrl} alt={item.productName} />
+          <ProductMedia imageUrl={item.imageUrl} visualEmoji={item.visualEmoji} alt={item.productName} wrapperClassName="cart-product-media"/>
           <div className="cart-item__main"><strong>{item.productName}</strong>{item.variation && <span>Variação: {item.variation.name}</span>}{item.addons.length > 0 && <span>{item.addons.map((a) => a.name).join(' · ')}</span>}<b>{currency.format(cartItemUnitTotal(item))} / un.</b></div>
           <QuantityControl value={item.quantity} onChange={(q) => updateQuantity(item.id, q)} />
           <strong className="cart-item__total">{currency.format(cartItemUnitTotal(item) * item.quantity)}</strong>

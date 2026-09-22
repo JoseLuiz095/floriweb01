@@ -1710,3 +1710,102 @@ button:disabled,input:disabled,textarea:disabled,select:disabled{opacity:.72}
 @media(max-width:430px){
   .interactive-showcase__heading h2{font-size:1.55rem}.interactive-showcase__mode-tabs button{font-size:.67rem}.interactive-demo__product{grid-template-columns:80px 1fr}.interactive-demo__product-art{min-height:126px}.interactive-demo__product-art .interactive-demo__fallback-icon{width:56px;height:56px}.interactive-demo__kpis{grid-template-columns:1fr 1fr;gap:7px}.interactive-demo__kpis article{padding:10px}.interactive-demo__order-actions{padding-left:0}.interactive-demo__order-actions label{width:100%;justify-content:space-between}.interactive-demo__order-actions select{max-width:190px}
 }
+
+
+/* FLORIWEB_LANDING_PLANOS_RC615 */
+.flori-sales-page-v615 .flori-sales-nav>div{gap:16px}
+.flori-sales-page-v615 .flori-sales-actions{flex-wrap:wrap}
+.flori-sales-plans-v615{padding-top:84px;padding-bottom:84px}
+.flori-sales-page-v615 .flori-plan-grid-v615{max-width:1120px!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:stretch}
+.flori-sales-page-v615 .flori-plan-grid-v615 article{min-height:100%;padding:30px;border:1px solid #eadfe2;background:linear-gradient(180deg,#fff 0%,#fffafb 100%);box-shadow:0 18px 45px rgba(29,18,22,.08)}
+.flori-sales-page-v615 .flori-plan-grid-v615 article.recommended{outline:none;border:2px solid #c96787;background:linear-gradient(180deg,#fff6f9 0%,#fff 100%);box-shadow:0 26px 56px rgba(159,49,81,.18);transform:none}
+.flori-sales-page-v615 .flori-plan-grid-v615 article>b{top:-14px;right:24px;padding:7px 12px;box-shadow:0 8px 20px rgba(113,34,59,.18)}
+.flori-sales-page-v615 .flori-plan-header-v615{display:grid;gap:11px}
+.flori-sales-page-v615 .flori-plan-header-v615 small{font-size:.66rem;letter-spacing:.11em}
+.flori-sales-page-v615 .flori-plan-header-v615 h3{margin:0;font-size:1.72rem}
+.flori-sales-page-v615 .flori-plan-header-v615>strong{font-size:1.75rem;color:var(--rose-dark)}
+.flori-sales-page-v615 .flori-plan-header-v615>strong span{font-size:.78rem;color:#7c6e73}
+.flori-sales-page-v615 .flori-plan-description-v615{margin:0;color:#706268;font-size:.83rem;line-height:1.6;min-height:52px}
+.flori-sales-page-v615 .flori-plan-fit-v615{display:grid;gap:5px;padding:13px 14px;border-radius:15px;background:#faf1f4;border:1px solid #eedde3}
+.flori-sales-page-v615 .flori-plan-fit-v615 strong{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#96314e}
+.flori-sales-page-v615 .flori-plan-fit-v615 span{font-size:.77rem;line-height:1.5;color:#68595f}
+.flori-sales-page-v615 .flori-plan-grid-v615 ul{margin:22px 0;gap:11px}
+.flori-sales-page-v615 .flori-plan-grid-v615 li{align-items:flex-start;font-size:.82rem;line-height:1.48;color:#4e4347}
+.flori-sales-page-v615 .flori-plan-grid-v615 li svg{width:17px;height:17px;margin-top:1px;flex:0 0 auto}
+.flori-sales-page-v615 .flori-plan-contact-v615{margin-top:auto;width:100%;min-height:50px;border:1px solid #ddb7c4;border-radius:14px;background:linear-gradient(180deg,#fff9fb 0%,#fcecf2 100%);color:#842845;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-weight:850;cursor:pointer;box-shadow:0 10px 26px rgba(113,34,59,.10);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+.flori-sales-page-v615 .flori-plan-contact-v615:hover{transform:translateY(-1px);border-color:#c77691;background:linear-gradient(180deg,#fff5f8 0%,#f9e4eb 100%);box-shadow:0 14px 30px rgba(113,34,59,.14)}
+.flori-sales-page-v615 .flori-plan-contact-v615:focus-visible,.flori-sales-page-v615 .flori-sales-final-contact-v615:focus-visible{outline:3px solid rgba(201,103,135,.28);outline-offset:3px}
+.flori-sales-page-v615 .flori-plan-contact-v615--featured{background:linear-gradient(135deg,#a63759 0%,#7b263f 100%);border-color:#7b263f;color:#fff;box-shadow:0 16px 32px rgba(113,34,59,.22)}
+.flori-sales-page-v615 .flori-plan-contact-v615--featured:hover{background:linear-gradient(135deg,#982f4f 0%,#6e2039 100%);box-shadow:0 19px 36px rgba(113,34,59,.26)}
+.flori-sales-page-v615 .flori-business-plan-v615{background:linear-gradient(150deg,#112e22,#173f2d)!important;border-color:#234f39!important;box-shadow:0 24px 50px rgba(12,37,25,.18)!important}
+.flori-sales-page-v615 .flori-business-plan-v615 h3,.flori-sales-page-v615 .flori-business-plan-v615>strong{color:#fff!important}
+.flori-sales-page-v615 .flori-business-plan-v615 .flori-plan-description-v615{color:#cfdfd5!important}
+.flori-sales-page-v615 .flori-plan-fit-v615--dark{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.13)}
+.flori-sales-page-v615 .flori-plan-fit-v615--dark strong{color:#a8ddb9}
+.flori-sales-page-v615 .flori-plan-fit-v615--dark span{color:#edf7f0}
+.flori-sales-page-v615 .flori-plan-contact-v615--dark{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.20);color:#fff;box-shadow:none}
+.flori-sales-page-v615 .flori-plan-contact-v615--dark:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.30);box-shadow:none}
+.flori-sales-page-v615 .flori-plan-note{margin-top:30px!important}
+.flori-sales-page-v615 .flori-sales-final-v615{padding:36px 40px;box-shadow:0 20px 44px rgba(113,34,59,.08)}
+.flori-sales-page-v615 .flori-sales-final-contact-v615{border:0;min-width:250px}
+@media(max-width:900px){
+  .flori-sales-page-v615 .flori-plan-grid-v615{grid-template-columns:1fr}
+  .flori-sales-page-v615 .flori-plan-description-v615{min-height:0}
+}
+@media(max-width:620px){
+  .flori-sales-page-v615 .flori-sales-nav>div{gap:8px}
+  .flori-sales-page-v615 .flori-plan-grid-v615 article{padding:24px}
+  .flori-sales-page-v615 .flori-sales-final-v615{padding:30px 24px}
+  .flori-sales-page-v615 .flori-sales-final-contact-v615{width:100%;min-width:0;white-space:normal}
+}
+
+/* FLORIWEB RC6.16 - EMOJI, COMPLEMENTOS E DEMONSTRACAO */
+.product-emoji-visual{display:grid;place-items:center;overflow:hidden;line-height:1;background:linear-gradient(145deg,#fff5f8,#f3ebeF);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.product-emoji-visual>span{display:block;filter:drop-shadow(0 7px 12px rgba(72,37,50,.10))}
+.product-media-fill{width:100%;height:100%}
+.product-media-fill>img{width:100%;height:100%;object-fit:cover}
+.product-card__image-wrap .product-emoji-visual{font-size:clamp(3rem,6vw,5.2rem);transition:transform .3s ease}
+.product-card:hover .product-card__image-wrap .product-emoji-visual{transform:scale(1.04)}
+.product-detail-media{width:100%;height:100%}
+.product-detail-media>img{width:100%;height:100%;object-fit:cover}
+.product-main-image>.product-emoji-visual{font-size:7rem;background:linear-gradient(145deg,#fff7f9,#f4ecef)}
+.cart-product-media{width:96px;height:96px;border-radius:13px;background:#f3efea;border:1px solid #eee7e1;font-size:3rem;overflow:hidden}
+.cart-product-media>img{width:100%;height:100%;object-fit:cover}
+.checkout-product-media{width:58px;height:58px;border-radius:12px;background:#f2eee8;border:1px solid #eee8df;font-size:2rem;overflow:hidden}
+.checkout-product-media>img{width:100%;height:100%;object-fit:cover}
+.addon-media{width:76px;height:76px;border-radius:12px;background:#f4eef1;border:1px solid #eee2e7;font-size:2.1rem;overflow:hidden}
+.addon-media>img{width:100%;height:100%;object-fit:cover}
+.addon-admin-media-rc616{width:70px;height:70px;border-radius:12px;background:#f4eef1;border:1px solid #eee2e7;font-size:2rem;overflow:hidden}
+.addon-admin-media-rc616>img{width:100%;height:100%;object-fit:cover}
+.addon-editor-media-rc616{width:110px;height:110px;border-radius:13px;background:#f4eef1;border:1px solid #eee2e7;font-size:3rem;overflow:hidden}
+.addon-editor-media-rc616>img{width:100%;height:100%;object-fit:cover}
+.product-emoji-editor-rc616{display:grid;gap:11px;padding:14px;border:1px solid #eadfe3;border-radius:14px;background:#fffafb}
+.product-emoji-editor-rc616 h3{margin:3px 0 0;font-size:.95rem}
+.product-emoji-editor-rc616 p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.5}
+.product-emoji-options-rc616{display:flex;flex-wrap:wrap;gap:7px}
+.product-emoji-options-rc616 button{width:40px;height:40px;border:1px solid #e7dce0;border-radius:11px;background:#fff;font-size:1.35rem;cursor:pointer;display:grid;place-items:center}
+.product-emoji-options-rc616 button:hover{border-color:#c9889a;background:#fff6f8}
+.product-emoji-options-rc616 button.selected{border-color:var(--rose);background:var(--rose-soft);box-shadow:0 0 0 2px rgba(185,79,103,.08)}
+
+.interactive-demo__emoji-v060{font-size:2.25rem!important}
+.interactive-demo__product-art .interactive-demo__emoji-v060{font-size:2rem!important}
+.interactive-demo__modal-art .interactive-demo__emoji-v060{font-size:5rem!important}
+.interactive-demo__addons-v060{display:grid;gap:7px;margin-top:16px;padding:12px;border:1px solid var(--demo-line);border-radius:12px;background:#fbfaf9}
+.interactive-demo__addons-v060>div:first-child{display:grid;gap:2px;margin-bottom:2px}
+.interactive-demo__addons-v060>div:first-child>span{font-size:.58rem;font-weight:950;letter-spacing:.09em;color:var(--demo-accent)}
+.interactive-demo__addons-v060>div:first-child>small{font-size:.58rem;color:var(--demo-muted)}
+.interactive-demo__addon-row-v060{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border:1px solid #eee7e2;border-radius:9px;background:#fff}
+.interactive-demo__addon-row-v060.selected{border-color:color-mix(in srgb,var(--demo-accent) 50%,#fff);background:var(--demo-accent-soft)}
+.interactive-demo__addon-row-v060>span{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:7px;align-items:center;min-width:0}
+.interactive-demo__addon-row-v060>span>b{font-size:1.05rem}.interactive-demo__addon-row-v060>span>strong{font-size:.64rem}.interactive-demo__addon-row-v060>span>small{font-size:.54rem;color:var(--demo-accent);white-space:nowrap}
+.interactive-demo__addon-row-v060>div{display:grid;grid-template-columns:28px 24px 28px;align-items:center;border:1px solid #e5ddd8;border-radius:8px;overflow:hidden;background:#fff}
+.interactive-demo__addon-row-v060>div button{width:28px;height:28px;border:0;background:#faf8f6;display:grid;place-items:center;cursor:pointer}.interactive-demo__addon-row-v060>div button:disabled{opacity:.35}.interactive-demo__addon-row-v060>div b{text-align:center;font-size:.62rem}
+.interactive-demo__cart-addons-v060{display:block!important;margin-top:3px!important;color:var(--demo-accent)!important;line-height:1.4!important}
+.interactive-demo__product-admin-v060{display:grid;gap:12px}.interactive-demo__admin-feature-note-v060{display:grid;gap:3px;padding:11px 12px;border:1px solid var(--demo-line);border-radius:10px;background:#fff}.interactive-demo__admin-feature-note-v060 strong{font-size:.7rem}.interactive-demo__admin-feature-note-v060 span{font-size:.58rem;line-height:1.5;color:var(--demo-muted)}
+@media(max-width:640px){
+  .cart-product-media{width:72px;height:72px;font-size:2.35rem}
+  .product-main-image>.product-emoji-visual{font-size:5.3rem}
+  .addon-media{width:68px;height:68px}
+  .addon-editor-media-rc616{width:82px;height:82px;font-size:2.4rem}
+  .interactive-demo__modal-art .interactive-demo__emoji-v060{font-size:4rem!important}
+}

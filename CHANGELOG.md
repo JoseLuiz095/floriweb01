@@ -1,3 +1,19 @@
+# 3.0.0-rc.6.16 — 2026-09-22
+
+## Personalização visual e complementos
+- Produtos podem usar emoji como visual quando não houver foto cadastrada.
+- Admin de produtos ganhou seletor de emojis correlacionados e campo para emoji personalizado.
+- Adicionais/complementos também podem usar emoji quando não houver imagem.
+- Vitrine, detalhe do produto, carrinho e checkout preservam o visual por emoji.
+- Demonstração interativa da floricultura passou a mostrar produtos com emojis e complementos reais como chocolate, cartão, pelúcia e vela.
+- Painel demonstrativo destaca que imagem ou emoji e complementos fazem parte do cadastro real.
+
+## Banco
+- Migration aditiva `202609221530_floriweb_rc616_visual_emoji.sql`.
+- Novas colunas opcionais `products.visual_emoji` e `addons.visual_emoji`.
+- RPC pública `get_public_storefront_v3` atualizada para retornar os novos campos.
+- Sem remoção de dados, sem mudança de RLS e sem alteração nas Edge Functions.
+
 # 3.0.0-rc.5.2
 
 - Admin Master agora permite habilitar/desabilitar a oferta de novas Demos sem interromper avaliações já existentes.

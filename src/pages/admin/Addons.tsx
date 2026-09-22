@@ -2,13 +2,14 @@ import { Edit3, ImagePlus, Plus, Save, Trash2, X } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { useStore } from '../../contexts/StoreContext';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
-import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
+import { ProductMedia } from '../../components/ProductMedia';
 import { useToast } from '../../contexts/ToastContext';
 import type { Addon } from '../../types';
 import { currency } from '../../utils/format';
 import { createId } from '../../utils/id';
 
-const empty=(storeId:string):Addon=>({id:createId(),storeId,name:'',description:'',price:0,active:true,imageUrl:''});
+const addonEmojiOptions=['🎁','🍫','🧸','💌','🎈','🕯️','🧺','🍬','🍾','🌹','🌸','💐'];
+const empty=(storeId:string):Addon=>({id:createId(),storeId,name:'',description:'',price:0,active:true,imageUrl:'',visualEmoji:'🎁'});
 
 export default function AddonsAdmin(){
   const {addons,products,settings,saveAddon,deleteAddon,uploadAddonImage,loading,error,reloadAdmin}=useStore();
@@ -29,7 +30,7 @@ export default function AddonsAdmin(){
     e.preventDefault();
     const formEl=e.currentTarget as HTMLFormElement;
     const fd=new FormData(formEl);
-    let addon:Addon={...form,name:String(fd.get('name')||'').trim(),description:String(fd.get('description')||'').trim(),price:Number(fd.get('price')||0),active:fd.get('active')==='on'};
+    let addon:Addon={...form,name:String(fd.get('name')||'').trim(),description:String(fd.get('description')||'').trim(),price:Number(fd.get('price')||0),active:fd.get('active')==='on',visualEmoji:String(fd.get('visualEmoji')||'').trim()||undefined};
     if(!addon.name){showToast('Informe o nome do adicional.','error');return}
     setBusy(true);
     try{
@@ -60,7 +61,7 @@ export default function AddonsAdmin(){
       <section className="admin-card no-padding">
         <div className="table-toolbar"><strong>{addons.length} adicionais</strong><span>Imagens ajudam o cliente a decidir</span></div>
         <div className="addon-admin-list">{addons.map(a=><article key={a.id} className="addon-admin-row">
-          <ImageWithFallback src={a.imageUrl||'/assets/placeholder-flower.svg'} alt={a.name}/>
+          <ProductMedia imageUrl={a.imageUrl} visualEmoji={a.visualEmoji} alt={a.name} wrapperClassName="addon-admin-media-rc616"/>
           <div className="addon-admin-row__content"><strong>{a.name}</strong><span>{a.description||'Sem descrição'}</span><b>{currency.format(a.price)} · {a.active?'Ativo':'Oculto'}</b></div>
           <div className="row-actions"><button type="button" onClick={()=>edit(a)} aria-label={`Editar ${a.name}`}><Edit3 size={16}/></button><button type="button" onClick={()=>void remove(a)} aria-label={`Excluir ${a.name}`}><Trash2 size={16}/></button></div>
         </article>)}</div>
@@ -69,9 +70,10 @@ export default function AddonsAdmin(){
       <section className="admin-card addon-editor-card">
         <div className="admin-card__header"><div><span className="eyebrow">{selected?'EDITAR':'NOVO'} ADICIONAL</span><h2>{selected?'Atualizar adicional':'Adicionar complemento'}</h2></div>{selected&&<button type="button" className="icon-button" onClick={clearForm}><X size={18}/></button>}</div>
         <form className="stack-form" key={selected?.id??draftId} onSubmit={submit}>
-          <div className="addon-image-editor"><ImageWithFallback src={preview} alt="Prévia do adicional"/><div><strong>Imagem do adicional</strong><span>JPG, PNG ou WEBP · até 5 MB</span><label className="secondary-button"><ImagePlus size={16}/>Selecionar imagem<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e)=>setImageFile(e.target.files?.[0]??null)}/></label></div></div>
+          <div className="addon-image-editor"><ProductMedia imageUrl={imageFile?preview:form.imageUrl} visualEmoji={form.visualEmoji} alt="Prévia do adicional" wrapperClassName="addon-editor-media-rc616"/><div><strong>Imagem ou emoji do adicional</strong><span>JPG, PNG ou WEBP · até 5 MB. Sem imagem, o emoji será exibido.</span><label className="secondary-button"><ImagePlus size={16}/>Selecionar imagem<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e)=>setImageFile(e.target.files?.[0]??null)}/></label></div></div>
           <label>Nome<input name="name" required defaultValue={form.name} placeholder="Ex.: Chocolate 90g"/></label>
           <label>Descrição<textarea name="description" rows={3} defaultValue={form.description}/></label>
+          <label>Emoji sem imagem<select name="visualEmoji" defaultValue={form.visualEmoji||''}><option value="">Sem emoji</option>{addonEmojiOptions.map(emoji=><option key={emoji} value={emoji}>{emoji}</option>)}</select></label>
           <label>Preço<input name="price" type="number" min="0" step="0.01" required defaultValue={form.price}/></label>
           <label className="mini-check"><input name="active" type="checkbox" defaultChecked={form.active}/>Adicional ativo</label>
           <button className="primary-button" disabled={busy} type="submit">{selected?<Save size={18}/>:<Plus size={18}/>} {busy?'Salvando...':selected?'Salvar alterações':'Adicionar adicional'}</button>

@@ -51,6 +51,7 @@ export type Addon = {
   active: boolean;
   imageUrl?: string;
   imageStoragePath?: string;
+  visualEmoji?: string;
 };
 
 export type ProductImage = {
@@ -83,6 +84,7 @@ export type Product = {
   stockLabel?: string;
   variations: ProductVariation[];
   addons: Addon[];
+  visualEmoji?: string;
 };
 
 
@@ -206,6 +208,7 @@ export type CartItem = {
   productId: string;
   productName: string;
   imageUrl: string;
+  visualEmoji?: string;
   unitPrice: number;
   quantity: number;
   variation?: ProductVariation;
