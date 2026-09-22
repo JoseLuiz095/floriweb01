@@ -1,1 +1,0 @@
-A main do FloriWeb esta em RC6.11. Use PUBLICAR_FLORIWEB_RC612_RELEASE.bat primeiro. Ele bloqueia qualquer mode 160000 para evitar repetir o problema do FoodWeb. Depois de testar a release, use PROMOVER_FLORIWEB_RC612_PARA_MAIN.bat.

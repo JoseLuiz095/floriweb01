@@ -1,9 +1,0 @@
-CORRECAO V2
-===========
-A primeira versao podia acusar falha na etapa 3 mesmo com os arquivos aplicados, por causa da validacao textual com acento no FINDSTR do Windows.
-
-Esta V2:
-- usa marcadores ASCII na validacao;
-- informa exatamente qual verificacao falhou;
-- preserva _backup_preview_rc6_11 caso ele ja exista;
-- pode ser extraida por cima da tentativa anterior sem perder o backup original.

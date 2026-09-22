@@ -26,3 +26,8 @@ dist
 .impeccable/live/deferred-svelte-component-accepts.json
 .impeccable/live/*.png
 # impeccable-ignore-end
+_backup_*/
+payload/
+payload_*/
+*.zip
+styles_rc*_append.css
