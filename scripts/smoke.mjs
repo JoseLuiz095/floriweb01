@@ -41,7 +41,7 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.16', packageJson.version === '3.0.0-rc.6.16');
+ok('Versao V3 RC6.19', packageJson.version === '3.0.0-rc.6.19');
 const selfSignup = read('src/pages/store/SelfSignup.tsx');
 const selfSignupService = read('src/services/selfServiceSignup.ts');
 const signupRequests = read('src/pages/master/SignupRequests.tsx');
@@ -278,7 +278,18 @@ ok('RC6.16 demonstracao possui complementos reais',interactiveRc614.includes('CO
 ok('RC6.16 SQL de validacao existe',exists('supabase/VALIDAR_RC616.sql'));
 
 if(failures.length){console.error(`\n${failures.length} falha(s):`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
-console.log(`\nSmoke test RC6.16 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
+const ordersRc617=read('src/pages/admin/Orders.tsx');
+const productFormRc617=read('src/pages/admin/ProductForm.tsx');
+const cartRc617=read('src/pages/store/Cart.tsx');
+const landingRc617=read('src/pages/store/Landing.tsx');
+const growthMigrationRc617=read('supabase/migrations/202609222030_floriweb_rc617_growth_tools.sql');
+ok('RC6.17 estoque simples e ficha tecnica',productFormRc617.includes('Estoque e ficha técnica')&&growthMigrationRc617.includes('stock_minimum')&&growthMigrationRc617.includes('technical_sheet'));
+ok('RC6.17 recuperacao de vendas',ordersRc617.includes('Recuperação de vendas')&&ordersRc617.includes('buildSalesRecoveryMessage'));
+ok('RC6.17 CRM simples',ordersRc617.includes('CRM simples de clientes')&&ordersRc617.includes('Mensagem de recompra'));
+ok('RC6.17 pedir novamente local',cartRc617.includes('Pedir novamente')&&read('src/pages/store/Checkout.tsx').includes('saveRecentOrder'));
+ok('RC6.17 landing comunica crescimento leve',landingRc617.includes('Estoque simples + ficha técnica')&&landingRc617.includes('Recuperação de vendas')&&landingRc617.includes('CRM simples + pedir novamente'));
+ok('RC6.17 SQL de validacao existe',exists('supabase/VALIDAR_RC617.sql'));
+console.log(`\nSmoke test RC6.18 concluido: ${checks.length} verificacoes + ${sourceFiles.length} arquivos TS/TSX com imports relativos validos.`);
 
 // RC6.11 - acabamento para producao
 const settingsRc611 = read('src/pages/admin/Settings.tsx');
@@ -291,3 +302,39 @@ ok('RC6.11 popover fecha ao clicar fora', storeHeaderRc611.includes('pointerdown
 ok('RC6.11 pausa de almoco configuravel', settingsRc611.includes('breakStart') && settingsRc611.includes('breakEnd') && settingsRc611.includes('Fechar para almoço'));
 ok('RC6.11 PIX possui botao textual para copiar', read('src/pages/store/OrderSuccess.tsx').includes('Copiar PIX'));
 ok('RC6.11 Admin Master preserva layout e ellipsis', masterLayoutRc611.includes('master-admin-mini') && styles.includes('text-overflow:ellipsis'));
+
+if(failures.length){console.error(`\n${failures.length} falha(s) apos as verificacoes RC6.17:`);for(const f of failures)console.error(`- ${f}`);process.exit(1)}
+console.log(`Smoke final FloriWeb RC6.18: ${checks.length} verificacoes aprovadas.`);
+
+
+// FloriWeb RC6.18 - correcao de estoque e acabamento comercial
+const typesRc618=read('src/types/index.ts');
+const settingsRc618=read('src/pages/admin/Settings.tsx');
+const ordersRc618=read('src/pages/admin/Orders.tsx');
+const landingRc618=read('src/pages/store/Landing.tsx');
+const masterPlansRc618=read('src/pages/master/Plans.tsx');
+const growthPrefsRc618=read('supabase/migrations/202609230930_floriweb_rc618_growth_preferences.sql');
+const benefitsRc618=read('supabase/migrations/202609231030_floriweb_rc618_plan_marketing_benefits.sql');
+ok('RC6.18 corrige tipos do estoque simples',typesRc618.includes('trackStock?: boolean')&&typesRc618.includes('stockQuantity?: number')&&typesRc618.includes('technicalSheet?: string'));
+ok('RC6.18 recuperacao configuravel',settingsRc618.includes('salesRecoveryMinutes')&&ordersRc618.includes('settings.salesRecoveryMinutes')&&growthPrefsRc618.includes('sales_recovery_minutes'));
+ok('RC6.18 CRM e recompra configuraveis',settingsRc618.includes('crmEnabled')&&settingsRc618.includes('repeatOrderEnabled'));
+ok('RC6.18 checkout e configuracoes responsivos',styles.includes('FloriWeb RC6.18 - acabamento comercial e responsivo'));
+ok('RC6.18 Premium com narrativa de crescimento',landingRc618.includes('POR QUE SUBIR PARA O PREMIUM?')&&landingRc618.includes('MAIS COMPLETO'));
+ok('RC6.18 beneficios comerciais editaveis',masterPlansRc618.includes('Benefícios comerciais extras')&&benefitsRc618.includes('marketing_benefits'));
+ok('RC6.18 demonstracao padroniza icones',interactiveRc614.includes('interactive-demo__flori-icon-rc618'));
+ok('RC6.18 SQL de validacao existe',exists('supabase/VALIDAR_RC618.sql'));
+if(failures.length){console.error(`\n${failures.length} falha(s) nas verificacoes RC6.18:`);for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
+console.log(`Smoke final FloriWeb RC6.18: ${checks.length} verificacoes aprovadas.`);
+
+
+// FloriWeb RC6.19 - acabamento operacional e relacionamento
+const customerSalesRc619=read('src/utils/customerSales.ts');
+const migrationRc619=read('supabase/migrations/202609231330_floriweb_rc619_message_preferences.sql');
+ok('RC6.19 horario usa scroll horizontal seguro',styles.includes('FloriWeb RC6.19 - responsividade operacional')&&styles.includes('overflow-x:auto')&&settingsRc618.includes('opening-hours-scroll-note'));
+ok('RC6.19 estoque fica visivel na lista',read('src/pages/admin/Products.tsx').includes('inventory-overview-rc619')&&read('src/pages/admin/Products.tsx').includes('Ficha técnica'));
+ok('RC6.19 recuperacao CRM e recompra possuem prazos',settingsRc618.includes('salesRecoveryWindowHours')&&settingsRc618.includes('crmComeBackDays')&&settingsRc618.includes('repeatOrderMaxAgeDays'));
+ok('RC6.19 upsell no carrinho',read('src/pages/store/Cart.tsx').includes('cart-upsell-rc619')&&settingsRc618.includes('upsellEnabled'));
+ok('RC6.19 mensagens editaveis e botao manual',settingsRc618.includes('Mensagens programadas')&&ordersRc618.includes('Avisar cliente')&&customerSalesRc619.includes('DEFAULT_CUSTOMER_MESSAGE_TEMPLATES'));
+ok('RC6.19 migration de preferencias existe',migrationRc619.includes('customer_message_templates')&&exists('supabase/VALIDAR_RC619.sql'));
+if(failures.length){console.error(`\n${failures.length} falha(s) nas verificacoes RC6.19:`);for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
+console.log(`Smoke final FloriWeb RC6.19: ${checks.length} verificacoes aprovadas.`);

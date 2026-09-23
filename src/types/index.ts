@@ -52,6 +52,11 @@ export type Addon = {
   imageUrl?: string;
   imageStoragePath?: string;
   visualEmoji?: string;
+  trackStock?: boolean;
+  stockQuantity?: number;
+  stockMinimum?: number;
+  estimatedCost?: number;
+  technicalSheet?: string;
 };
 
 export type ProductImage = {
@@ -85,6 +90,11 @@ export type Product = {
   variations: ProductVariation[];
   addons: Addon[];
   visualEmoji?: string;
+  trackStock?: boolean;
+  stockQuantity?: number;
+  stockMinimum?: number;
+  estimatedCost?: number;
+  technicalSheet?: string;
 };
 
 
@@ -100,6 +110,15 @@ export type OpeningDayConfig = {
 export type OpeningSchedule = {
   timezone: string;
   days: OpeningDayConfig[];
+};
+
+
+export type CustomerMessageTemplates = {
+  orderCreated: string;
+  whatsappOpened: string;
+  cancelled: string;
+  salesRecovery: string;
+  comeBack: string;
 };
 
 export type StoreSettings = {
@@ -132,6 +151,16 @@ export type StoreSettings = {
   deliveryEnabled: boolean;
   pickupEnabled: boolean;
   minimumOrder: number;
+  salesRecoveryEnabled: boolean;
+  salesRecoveryMinutes: number;
+  salesRecoveryWindowHours?: number;
+  crmEnabled: boolean;
+  crmComeBackDays?: number;
+  repeatOrderEnabled: boolean;
+  repeatOrderMaxAgeDays?: number;
+  upsellEnabled?: boolean;
+  upsellLimit?: number;
+  messageTemplates?: CustomerMessageTemplates;
   openingHours: string;
   openingSchedule: OpeningSchedule;
   active: boolean;
@@ -154,6 +183,7 @@ export type Plan = {
   adminUserLimit?: number | null;
   sortOrder?: number;
   active: boolean;
+  marketingBenefits?: string[];
 };
 
 export type PlatformSettings = {

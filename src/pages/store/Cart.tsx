@@ -1,58 +1,61 @@
-import { AlertCircle, ArrowLeft, ArrowRight, Clock3, ShoppingBag, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { AlertCircle, ArrowLeft, ArrowRight, Clock3, Plus, RotateCcw, ShoppingBag, Trash2 } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { ProductMedia } from '../../components/ProductMedia';
 import { LoadingState } from '../../components/ui/AsyncState';
 import { QuantityControl } from '../../components/QuantityControl';
 import { cartItemUnitTotal, useCart } from '../../contexts/CartContext';
 import { useStore } from '../../contexts/StoreContext';
 import { addDaysLocalISO, currency, formatDateBR } from '../../utils/format';
+import { loadRecentOrder } from '../../utils/customerSales';
 import { storefrontPath } from '../../utils/storefrontRoute';
+import type { Addon } from '../../types';
 
 export default function Cart() {
-  const { items, subtotal, updateQuantity, removeItem, validateAgainstProducts } = useCart();
+  const { items, subtotal, addItem, updateQuantity, removeItem, validateAgainstProducts } = useCart();
   const { products, settings, loading, storeBasePath } = useStore();
 
-  useEffect(() => {
-    if (!loading) validateAgainstProducts(products);
-  }, [products, loading, validateAgainstProducts]);
+  useEffect(() => { if (!loading) validateAgainstProducts(products); }, [products, loading, validateAgainstProducts]);
+  const recentOrder = useMemo(() => loadRecentOrder(settings.id, (settings.repeatOrderMaxAgeDays ?? 120)), [settings.id, settings.repeatOrderMaxAgeDays]);
+  const suggestions = useMemo(() => { const inCart=new Set(items.map((item)=>item.productId)); return products.filter((product)=>product.active&&product.stockStatus!=='unavailable'&&!inCart.has(product.id)).sort((a,b)=>Number(b.featured)-Number(a.featured)||(a.promotionalPrice??a.price)-(b.promotionalPrice??b.price)).slice(0,settings.upsellEnabled!==false?(settings.upsellLimit??3):0); }, [items, products, settings.upsellEnabled, settings.upsellLimit]);
+
+  const restoreRecentOrder = () => {
+    if (!recentOrder) return;
+    let added = 0;
+    for (const saved of recentOrder.items) {
+      const product = products.find((candidate) => candidate.id === saved.productId && candidate.active && candidate.stockStatus !== 'unavailable');
+      if (!product) continue;
+      const variation = saved.variation ? product.variations.find((candidate) => candidate.id === saved.variation?.id && candidate.active) : undefined;
+      if (saved.variation && !variation) continue;
+      const addons = saved.addons.map((selected) => product.addons.find((addon) => addon.id === selected.id && addon.active)).filter((addon): addon is Addon => Boolean(addon));
+      addItem(product, saved.quantity, variation, addons);
+      added += 1;
+    }
+    if (!added) window.alert('Os itens do último pedido mudaram ou não estão disponíveis. Escolha novamente pelo catálogo.');
+  };
 
   if (loading) return <div className="page-center"><LoadingState label="Carregando carrinho..." /></div>;
 
-  if (!items.length) {
-    return <div className="simple-page">
-      <header className="simple-topbar container cart-navigation-layer"><a className="cart-nav-button" href={storefrontPath(storeBasePath)}><ArrowLeft size={19} />Voltar ao catálogo</a></header>
-      <div className="cart-empty"><ShoppingBag size={48} /><h1>Seu carrinho está vazio</h1><p>Escolha flores ou presentes e volte aqui para finalizar.</p><a className="primary-button" href={storefrontPath(storeBasePath)}>Ver produtos</a></div>
-    </div>;
-  }
+  if (!items.length) return <div className="simple-page">
+    <header className="simple-topbar container cart-navigation-layer"><a className="cart-nav-button" href={storefrontPath(storeBasePath)}><ArrowLeft size={19}/>Voltar ao catálogo</a></header>
+    <div className="cart-empty"><ShoppingBag size={48}/><h1>Seu carrinho está vazio</h1><p>Escolha flores ou presentes e volte aqui para finalizar.</p><div className="cart-empty-actions-rc617"><a className="primary-button" href={storefrontPath(storeBasePath)}>Ver produtos</a>{settings.repeatOrderEnabled&&recentOrder&&<button type="button" className="secondary-button" onClick={restoreRecentOrder}><RotateCcw size={17}/>Pedir novamente</button>}</div>{settings.repeatOrderEnabled&&recentOrder&&<small className="recent-order-note-rc617">Último pedido salvo neste dispositivo em {new Date(recentOrder.createdAt).toLocaleDateString('pt-BR')}.</small>}</div>
+  </div>;
 
   const minimumMissing = Math.max(0, settings.minimumOrder - subtotal);
-  const madeToOrderProducts = items
-    .map((item) => products.find((product) => product.id === item.productId))
-    .filter((product): product is NonNullable<typeof product> => Boolean(product?.madeToOrder && product.productionDays > 0));
+  const madeToOrderProducts = items.map((item) => products.find((product) => product.id === item.productId)).filter((product): product is NonNullable<typeof product> => Boolean(product?.madeToOrder && product.productionDays > 0));
   const maxProductionDays = madeToOrderProducts.reduce((max, product) => Math.max(max, product.productionDays), 0);
   const minimumMadeToOrderDate = maxProductionDays > 0 ? addDaysLocalISO(maxProductionDays) : '';
   const limitingProducts = madeToOrderProducts.filter((product) => product.productionDays === maxProductionDays);
+
   return <div className="simple-page">
-    <header className="simple-topbar container cart-navigation-layer"><a className="cart-nav-button" href={storefrontPath(storeBasePath)}><ArrowLeft size={19} />Continuar comprando</a><span>Seu carrinho</span></header>
+    <header className="simple-topbar container cart-navigation-layer"><a className="cart-nav-button" href={storefrontPath(storeBasePath)}><ArrowLeft size={19}/>Continuar comprando</a><span>Seu carrinho</span></header>
     <div className="container cart-layout">
       <section>
         <div className="page-title"><span className="eyebrow">SEU PEDIDO</span><h1>Revise os itens</h1><p>Confira produtos, variações e complementos antes de avançar.</p></div>
-        {minimumMadeToOrderDate && <div className="made-to-order-cart-warning"><Clock3 size={19}/><div><strong>Seu carrinho tem produto sob encomenda</strong><span>A primeira data disponível para entrega ou retirada é <b>{formatDateBR(minimumMadeToOrderDate)}</b>, considerando o maior prazo de produção ({maxProductionDays} {maxProductionDays===1?'dia':'dias'}){limitingProducts.length ? ` de ${limitingProducts.map((product) => product.name).join(', ')}` : ''}.</span></div></div>}
-        <div className="cart-list">{items.map((item) => <article key={item.id} className="cart-item">
-          <ProductMedia imageUrl={item.imageUrl} visualEmoji={item.visualEmoji} alt={item.productName} wrapperClassName="cart-product-media"/>
-          <div className="cart-item__main"><strong>{item.productName}</strong>{item.variation && <span>Variação: {item.variation.name}</span>}{item.addons.length > 0 && <span>{item.addons.map((a) => a.name).join(' · ')}</span>}<b>{currency.format(cartItemUnitTotal(item))} / un.</b></div>
-          <QuantityControl value={item.quantity} onChange={(q) => updateQuantity(item.id, q)} />
-          <strong className="cart-item__total">{currency.format(cartItemUnitTotal(item) * item.quantity)}</strong>
-          <button type="button" className="row-delete" onClick={() => removeItem(item.id)} aria-label={`Remover ${item.productName}`}><Trash2 size={18} /></button>
-        </article>)}</div>
+        {minimumMadeToOrderDate&&<div className="made-to-order-cart-warning"><Clock3 size={19}/><div><strong>Seu carrinho tem produto sob encomenda</strong><span>A primeira data disponível para entrega ou retirada é <b>{formatDateBR(minimumMadeToOrderDate)}</b>, considerando o maior prazo de produção ({maxProductionDays} {maxProductionDays===1?'dia':'dias'}){limitingProducts.length?` de ${limitingProducts.map((product)=>product.name).join(', ')}`:''}.</span></div></div>}
+        <div className="cart-list">{items.map((item)=><article key={item.id} className="cart-item"><ProductMedia imageUrl={item.imageUrl} visualEmoji={item.visualEmoji} alt={item.productName} wrapperClassName="cart-product-media"/><div className="cart-item__main"><strong>{item.productName}</strong>{item.variation&&<span>Variação: {item.variation.name}</span>}{item.addons.length>0&&<span>{item.addons.map((a)=>a.name).join(' · ')}</span>}<b>{currency.format(cartItemUnitTotal(item))} / un.</b></div><QuantityControl value={item.quantity} onChange={(q)=>updateQuantity(item.id,q)}/><strong className="cart-item__total">{currency.format(cartItemUnitTotal(item)*item.quantity)}</strong><button type="button" className="row-delete" onClick={()=>removeItem(item.id)} aria-label={`Remover ${item.productName}`}><Trash2 size={18}/></button></article>)}</div>
+        {suggestions.length>0&&<section className="cart-upsell-rc619"><div className="cart-upsell-rc619__heading"><span className="eyebrow">COMPLETE O PRESENTE</span><h2>Que tal levar também?</h2><p>Sugestões disponíveis para complementar a compra antes do checkout.</p></div><div className="cart-upsell-rc619__grid">{suggestions.map((product)=>{const activeVariations=product.variations.filter((variation)=>variation.active);const canQuickAdd=activeVariations.length===0;const price=product.promotionalPrice??product.price;return <article key={product.id}><ProductMedia imageUrl={product.imageUrl} visualEmoji={product.visualEmoji} alt={product.name}/><div><strong>{product.name}</strong><span>{currency.format(price)}</span></div>{canQuickAdd?<button type="button" onClick={()=>addItem(product,1,undefined,[])}><Plus size={16}/>Adicionar</button>:<a href={storefrontPath(storeBasePath,`/produto/${product.slug}`)}>Personalizar <ArrowRight size={15}/></a>}</article>})}</div></section>}
       </section>
-      <aside className="order-summary cart-navigation-layer">
-        <span className="eyebrow">RESUMO</span>
-        <div className="summary-total"><span>Subtotal</span><strong>{currency.format(subtotal)}</strong></div>
-        {settings.minimumOrder > 0 && <div className={`minimum-order ${minimumMissing > 0 ? 'warning' : ''}`}><span>Pedido mínimo: {currency.format(settings.minimumOrder)}</span>{minimumMissing > 0 && <strong>Faltam {currency.format(minimumMissing)}</strong>}</div>}
-        <p>Taxa de entrega e disponibilidade serão confirmadas pela loja.</p>
-        {minimumMissing > 0 ? <button type="button" className="primary-button cart-continue-button" disabled>Continuar <ArrowRight size={18} /></button> : <a className="primary-button cart-continue-button" href={storefrontPath(storeBasePath,"/finalizar")}>Continuar <ArrowRight size={18} /></a>}
-      </aside>
+      <aside className="order-summary cart-navigation-layer"><span className="eyebrow">RESUMO</span><div className="summary-total"><span>Subtotal</span><strong>{currency.format(subtotal)}</strong></div>{settings.minimumOrder>0&&<div className={`minimum-order ${minimumMissing>0?'warning':''}`}><span>Pedido mínimo: {currency.format(settings.minimumOrder)}</span>{minimumMissing>0&&<strong>Faltam {currency.format(minimumMissing)}</strong>}</div>}<p>Taxa de entrega e disponibilidade serão confirmadas pela loja.</p>{minimumMissing>0?<button type="button" className="primary-button cart-continue-button" disabled><AlertCircle size={18}/>Complete o pedido</button>:<a className="primary-button cart-continue-button" href={storefrontPath(storeBasePath,"/finalizar")}>Continuar <ArrowRight size={18}/></a>}</aside>
     </div>
   </div>;
 }

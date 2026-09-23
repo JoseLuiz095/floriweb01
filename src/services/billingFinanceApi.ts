@@ -5,6 +5,7 @@ export type BillingPlan = {
   code: string;
   name: string;
   monthlyPrice: number;
+  marketingBenefits?: string[];
 };
 
 export type BillingSettings = {
@@ -140,6 +141,7 @@ type PublicLandingRpc = {
     code: string;
     name: string;
     monthly_price?: number | string | null;
+    marketing_benefits?: string[] | null;
   }>;
 };
 
@@ -237,6 +239,7 @@ export const loadPublicLanding = (): Promise<PublicLanding> => {
         code: plan.code,
         name: plan.name,
         monthlyPrice: number(plan.monthly_price),
+        marketingBenefits: Array.isArray(plan.marketing_benefits) ? plan.marketing_benefits.filter(Boolean) : [],
       })),
     }))
     .catch((error) => {

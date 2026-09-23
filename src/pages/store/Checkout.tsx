@@ -35,6 +35,7 @@ import { buildPixCopyPasteWithAmount } from '../../utils/pix';
 import { normalizeText } from '../../utils/text';
 import { buildWhatsAppMessage } from '../../utils/whatsapp';
 import { storefrontPath } from '../../utils/storefrontRoute';
+import { saveRecentOrder } from '../../utils/customerSales';
 
 const initial: CheckoutData = {
   customerName: '',
@@ -499,6 +500,7 @@ export default function Checkout() {
       };
 
       saveOrderConfirmation(confirmation);
+      saveRecentOrder(settings.id, items, normalizedForm.customerName, normalizedForm.customerPhone);
       checkoutCompleted.current = true;
       clearCheckoutDraft(settings.id);
       clear();
