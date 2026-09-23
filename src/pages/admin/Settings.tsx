@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp, Banknote, Clock3, CreditCard, ImagePlus, Info, QrCode, RotateCcw, Save } from 'lucide-react';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
 import { useStore } from '../../contexts/StoreContext';
@@ -16,6 +16,7 @@ export default function SettingsAdmin() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const pixCopyPasteRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => setForm(structuredClone(settings)), [settings]);
   const logoPreview = useMemo(() => logoFile ? URL.createObjectURL(logoFile) : form.logoUrl, [logoFile, form.logoUrl]);
@@ -24,6 +25,15 @@ export default function SettingsAdmin() {
   useEffect(() => () => { if (coverFile) URL.revokeObjectURL(coverPreview); }, [coverFile, coverPreview]);
 
   const update = <K extends keyof StoreSettings>(key: K, value: StoreSettings[K]) => setForm((current) => ({ ...current, [key]: value }));
+  const activatePixReceiptMode = (mode: StoreSettings['pixReceiptMode']) => {
+    update('pixReceiptMode', mode);
+    if (mode === 'copy_paste') {
+      window.setTimeout(() => {
+        pixCopyPasteRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        pixCopyPasteRef.current?.focus();
+      }, 80);
+    }
+  };
   const movePaymentMethod = (method: PaymentMethod, direction: -1 | 1) => setForm((current) => {
     const order = [...current.paymentMethodOrder];
     const index = order.indexOf(method);
@@ -154,6 +164,15 @@ export default function SettingsAdmin() {
             <label className="switch-row"><span><strong>Retirada</strong><small>Permitir retirada na loja</small></span><input type="checkbox" checked={form.pickupEnabled} onChange={(e) => update('pickupEnabled', e.target.checked)} /></label>
           </section>
 
+          <section className="admin-card form-section growth-settings-rc618">
+            <span className="eyebrow">RELACIONAMENTO</span><h2>Recorrência de clientes</h2>
+            <label className="switch-row"><span><strong>Recuperação de vendas</strong><small>Mostra oportunidades de pedidos que ficaram sem continuidade.</small></span><input type="checkbox" checked={form.salesRecoveryEnabled} onChange={(e)=>update('salesRecoveryEnabled',e.target.checked)} /></label>
+            {form.salesRecoveryEnabled&&<label>Considerar oportunidade após (min)<input type="number" min="5" max="1440" step="5" value={form.salesRecoveryMinutes} onChange={(e)=>update('salesRecoveryMinutes',Math.min(1440,Math.max(5,Number(e.target.value)||5)))} /></label>}
+            <label className="switch-row"><span><strong>CRM simples</strong><small>Agrupa clientes pelo telefone usando pedidos já registrados.</small></span><input type="checkbox" checked={form.crmEnabled} onChange={(e)=>update('crmEnabled',e.target.checked)} /></label>
+            <label className="switch-row"><span><strong>Pedir novamente</strong><small>Permite recuperar o último pedido salvo no dispositivo do cliente.</small></span><input type="checkbox" checked={form.repeatOrderEnabled} onChange={(e)=>update('repeatOrderEnabled',e.target.checked)} /></label>
+            <div className="admin-info-box"><Info size={17}/><span>O FloriWeb mantém esses recursos simples para apoiar recompra sem criar um CRM pesado.</span></div>
+          </section>
+
           <section className="admin-card form-section payment-admin-section">
             <div className="admin-card__header"><div><span className="eyebrow">PAGAMENTOS</span><h2>Confirmação manual</h2></div><Info size={21} /></div>
             <label className="switch-row"><span><strong>Confirmar com a floricultura</strong><small>Permite finalizar sem escolher PIX, cartão ou dinheiro. A loja combina o pagamento pelo WhatsApp.</small></span><input type="checkbox" checked={form.confirmationPaymentEnabled} onChange={(e) => update('confirmationPaymentEnabled', e.target.checked)} /></label>
@@ -169,11 +188,11 @@ export default function SettingsAdmin() {
 
                 <div className="pix-mode-admin">
                   <span className="admin-field-label">Como o cliente receberá o PIX?</span>
-                  <button type="button" className={form.pixReceiptMode === 'copy_paste' ? 'pix-mode-option selected' : 'pix-mode-option'} onClick={() => update('pixReceiptMode', 'copy_paste')}>
+                  <button type="button" className={form.pixReceiptMode === 'copy_paste' ? 'pix-mode-option selected' : 'pix-mode-option'} onClick={() => activatePixReceiptMode('copy_paste')}>
                     <QrCode size={22} />
                     <span><strong>PIX Copia e Cola <em>Recomendado</em></strong><small>O sistema coloca automaticamente o total do carrinho no código PIX.</small></span>
                   </button>
-                  <button type="button" className={form.pixReceiptMode === 'key' ? 'pix-mode-option selected' : 'pix-mode-option'} onClick={() => update('pixReceiptMode', 'key')}>
+                  <button type="button" className={form.pixReceiptMode === 'key' ? 'pix-mode-option selected' : 'pix-mode-option'} onClick={() => activatePixReceiptMode('key')}>
                     <CreditCard size={22} />
                     <span><strong>Chave PIX</strong><small>O cliente copia a chave e informa o valor manualmente no banco.</small></span>
                   </button>
@@ -181,7 +200,7 @@ export default function SettingsAdmin() {
 
                 {form.pixReceiptMode === 'copy_paste' ? (
                   <>
-                    <label>PIX Copia e Cola base<textarea rows={5} value={form.pixCopyPaste} onChange={(e) => update('pixCopyPaste', e.target.value)} placeholder="Cole aqui o código PIX Copia e Cola gerado pelo seu banco" /></label>
+                    <label className="pix-copy-paste-field">PIX Copia e Cola base<textarea ref={pixCopyPasteRef} rows={5} value={form.pixCopyPaste} onChange={(e) => update('pixCopyPaste', e.target.value)} placeholder="Cole aqui o código PIX Copia e Cola gerado pelo seu banco" /></label>
                     <details className="payment-help">
                       <summary><Info size={16} />Como obter este código no banco?</summary>
                       <div>

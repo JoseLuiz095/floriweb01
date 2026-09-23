@@ -10,6 +10,9 @@ import {
   Package,
   Plus,
   RotateCcw,
+  Rose,
+  Gift,
+  Sparkles,
   Search,
   ShoppingBag,
   Truck,
@@ -164,6 +167,11 @@ const floriStatusLabel:Record<string,string>={draft:'Pedido realizado',sent_to_w
 const paymentLabel:Record<PaymentMethod,string>={pix:'PIX',card:'Cartão',cash:'Dinheiro',confirm:'Combinar com a loja'};
 
 function ProductVisual({variant,product}:{variant:Variant;product?:DemoProduct}){
+  if(variant==='flori'&&product){
+    const name=product.name.toLowerCase();
+    const Icon=name.includes('cesta')||name.includes('box')?Gift:name.includes('girassol')||name.includes('lírio')?Sparkles:Rose;
+    return <span className="interactive-demo__fallback-icon interactive-demo__flori-icon-rc618" role="img" aria-label={product.name}><Icon size={30}/></span>;
+  }
   if(product?.emoji)return <span className="interactive-demo__fallback-icon interactive-demo__emoji-v060" role="img" aria-label={product.name}>{product.emoji}</span>;
   return <span className="interactive-demo__fallback-icon" aria-hidden="true">{variant==='food'?<Utensils/>:<Flower2/>}</span>;
 }

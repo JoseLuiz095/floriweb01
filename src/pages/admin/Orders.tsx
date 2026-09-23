@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleDollarSign, MessageCircle, RefreshCw, Search, ShoppingBag } from 'lucide-react';
+import { CheckCircle2, CircleDollarSign, MessageCircle, RefreshCw, RotateCcw, Search, ShoppingBag, Users } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ErrorState, LoadingState } from '../../components/ui/AsyncState';
@@ -7,6 +7,7 @@ import { trackInteraction } from '../../services/interactionTelemetry';
 import { currency, formatDateBR, formatDateTimeBR } from '../../utils/format';
 import type { OrderStatus, PaymentMethod } from '../../types';
 import { formatOrderNumber } from '../../utils/orderConfirmation';
+import { buildComeBackMessage, buildSalesRecoveryMessage, normalizeWhatsappPhone, openCustomerWhatsapp } from '../../utils/customerSales';
 
 const statusLabel: Record<OrderStatus, string> = {
   draft: 'Pedido realizado',
@@ -115,6 +116,26 @@ export default function OrdersAdmin() {
     });
   }, [orders, query, statusFilter, sortBy]);
 
+  const recoveryOrders = useMemo(() => {
+    const now = Date.now();
+    return orders.filter((order) => {
+      const age = now - new Date(order.createdAt).getTime();
+      return settings.salesRecoveryEnabled && Boolean(order.customerPhone) && order.status === 'draft' && !order.whatsappClickedAt && age >= settings.salesRecoveryMinutes * 60_000 && age <= 72 * 60 * 60_000;
+    }).slice(0, 12);
+  }, [orders, settings.salesRecoveryEnabled, settings.salesRecoveryMinutes]);
+
+  const customers = useMemo(() => {
+    const map = new Map<string, { key:string; name:string; phone:string; orders:number; total:number; lastAt:string }>();
+    for (const order of orders) {
+      const key = normalizeWhatsappPhone(order.customerPhone);
+      if (!key || order.status === 'cancelled') continue;
+      const current = map.get(key);
+      if (!current) map.set(key, { key, name:order.customerName, phone:order.customerPhone || key, orders:1, total:order.total, lastAt:order.createdAt });
+      else { current.orders += 1; current.total += order.total; if (new Date(order.createdAt).getTime() > new Date(current.lastAt).getTime()) { current.lastAt=order.createdAt; current.name=order.customerName; } }
+    }
+    return [...map.values()].sort((a,b)=>new Date(b.lastAt).getTime()-new Date(a.lastAt).getTime()).slice(0,20);
+  }, [orders]);
+
   useEffect(() => {
     if (!highlightedOrderId) return;
     const highlightedOrder = orders.find((order) => order.id === highlightedOrderId);
@@ -142,6 +163,19 @@ export default function OrdersAdmin() {
           <h1>Pedidos realizados</h1>
           <p>Confirme o recebimento no próprio pedido. A entrada é registrada automaticamente no Financeiro, sem duplicidade.</p>
         </div>
+      </div>
+
+      <div className="sales-ops-grid-rc617">
+        <details className="sales-ops-panel-rc617" open={recoveryOrders.length > 0}>
+          <summary><span><RotateCcw size={18}/><strong>Recuperação de vendas</strong></span><b>{recoveryOrders.length}</b></summary>
+          <p>Pedidos registrados há pelo menos {settings.salesRecoveryMinutes} minutos em que o WhatsApp ainda não foi aberto. O contato continua manual, com mensagem pronta.</p>
+          {recoveryOrders.length ? <div className="sales-ops-list-rc617">{recoveryOrders.map((order)=><article key={order.id}><div><strong>#{formatOrderNumber(order.orderNumber)} · {order.customerName}</strong><span>{currency.format(order.total)} · {formatDateTimeBR(order.createdAt)}</span></div><button type="button" onClick={()=>openCustomerWhatsapp(order.customerPhone,buildSalesRecoveryMessage(settings.name,order))}><MessageCircle size={15}/>Recuperar venda</button></article>)}</div> : <div className="sales-ops-empty-rc617">Nenhuma oportunidade pendente agora.</div>}
+        </details>
+        {settings.crmEnabled&&<details className="sales-ops-panel-rc617">
+          <summary><span><Users size={18}/><strong>CRM simples de clientes</strong></span><b>{customers.length}</b></summary>
+          <p>Frequência, valor acumulado e última compra, calculados a partir dos pedidos recentes.</p>
+          {customers.length ? <div className="sales-ops-list-rc617">{customers.map((customer)=><article key={customer.key}><div><strong>{customer.name}</strong><span>{customer.orders} pedido{customer.orders===1?'':'s'} · {currency.format(customer.total)} · último {new Date(customer.lastAt).toLocaleDateString('pt-BR')}</span></div><button type="button" onClick={()=>openCustomerWhatsapp(customer.phone,buildComeBackMessage(settings.name,customer.name))}><MessageCircle size={15}/>Mensagem de recompra</button></article>)}</div> : <div className="sales-ops-empty-rc617">Os clientes aparecerão aqui conforme os pedidos forem chegando.</div>}
+        </details>}
       </div>
 
       <section className="admin-card no-padding">

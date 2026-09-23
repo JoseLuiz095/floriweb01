@@ -52,6 +52,11 @@ export type Addon = {
   imageUrl?: string;
   imageStoragePath?: string;
   visualEmoji?: string;
+  trackStock?: boolean;
+  stockQuantity?: number;
+  stockMinimum?: number;
+  estimatedCost?: number;
+  technicalSheet?: string;
 };
 
 export type ProductImage = {
@@ -85,6 +90,11 @@ export type Product = {
   variations: ProductVariation[];
   addons: Addon[];
   visualEmoji?: string;
+  trackStock?: boolean;
+  stockQuantity?: number;
+  stockMinimum?: number;
+  estimatedCost?: number;
+  technicalSheet?: string;
 };
 
 
@@ -132,6 +142,10 @@ export type StoreSettings = {
   deliveryEnabled: boolean;
   pickupEnabled: boolean;
   minimumOrder: number;
+  salesRecoveryEnabled: boolean;
+  salesRecoveryMinutes: number;
+  crmEnabled: boolean;
+  repeatOrderEnabled: boolean;
   openingHours: string;
   openingSchedule: OpeningSchedule;
   active: boolean;
@@ -154,6 +168,7 @@ export type Plan = {
   adminUserLimit?: number | null;
   sortOrder?: number;
   active: boolean;
+  marketingBenefits?: string[];
 };
 
 export type PlatformSettings = {

@@ -1,0 +1,1 @@
+select column_name,data_type from information_schema.columns where table_schema='public' and table_name='stores' and column_name in ('sales_recovery_enabled','sales_recovery_minutes','crm_enabled','repeat_order_enabled') order by column_name;

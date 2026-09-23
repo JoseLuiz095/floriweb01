@@ -156,7 +156,7 @@ export const seedSettings: StoreSettings = {
   city: 'Linhares', state: 'ES', zipCode: '', whatsapp: '5527999999999', instagram: '@jardimdavila',
   address: 'Centro, Linhares - ES', logoUrl: '/assets/logo.svg', heroUrl: '/assets/hero.svg',
   pixEnabled: true, pixReceiptMode: 'copy_paste', pixKeyType: 'E-mail', pixKey: 'demo@floriweb.local', pixCopyPaste: '00020126410014BR.GOV.BCB.PIX0119demo@floriweb.local5204000053039865802BR5914JARDIM DA VILA6008LINHARES62070503***6304715B', pixReceiver: 'Jardim da Vila Floricultura',
-  showPixBeforeConfirmation: true, confirmationPaymentEnabled: false, cardPaymentEnabled: true, cashPaymentEnabled: true, paymentMethodOrder: ['pix', 'card', 'cash', 'confirm'], deliveryEnabled: true, pickupEnabled: true, minimumOrder: 0,
+  showPixBeforeConfirmation: true, confirmationPaymentEnabled: false, cardPaymentEnabled: true, cashPaymentEnabled: true, paymentMethodOrder: ['pix', 'card', 'cash', 'confirm'], deliveryEnabled: true, pickupEnabled: true, minimumOrder: 0, salesRecoveryEnabled:true, salesRecoveryMinutes:30, crmEnabled:true, repeatOrderEnabled:true,
   openingHours: 'Seg 08:00–18:00 · Ter 08:00–18:00 · Qua 08:00–18:00 · Qui 08:00–18:00 · Sex 08:00–18:00 · Sáb 08:00–14:00',
   openingSchedule: { timezone: 'America/Sao_Paulo', days: [
     { day: 0, enabled: false, open: '08:00', close: '18:00' },

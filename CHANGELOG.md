@@ -1,3 +1,26 @@
+# FloriWeb v3.0.0-rc.6.18
+
+- Corrige o erro TypeScript do RC6.17 adicionando os campos de estoque/ficha técnica ao tipo Product.
+- Recuperação de vendas, CRM e recompra configuráveis.
+- Checkout, horários e configurações com acabamento responsivo.
+- Premium reposicionado e benefícios comerciais extras editáveis pelo Admin Master.
+- Demonstração usa ícones vetoriais para reduzir diferenças entre navegadores.
+
+# 3.0.0-rc.6.17 — 2026-09-22
+
+## Crescimento leve e controle operacional
+- Recuperação de vendas integrada à tela de Pedidos com abordagem manual por WhatsApp.
+- CRM simples derivado dos pedidos existentes, com frequência, valor acumulado e mensagem de recompra.
+- Cliente pode usar “Pedir novamente” no mesmo dispositivo, sem criar conta.
+- Cadastro de produto ganhou estoque simples por quantidade, alerta mínimo, custo estimado e ficha técnica interna.
+- Lista de produtos mostra quantidade atual, mínimo e custo quando o controle de estoque está habilitado.
+- Landing comercial passou a comunicar estoque/ficha técnica, recuperação de vendas e CRM/recompra.
+
+## Banco
+- Migration aditiva `202609222030_floriweb_rc617_growth_tools.sql`.
+- Novos campos opcionais em `products`: `track_stock`, `stock_quantity`, `stock_minimum`, `estimated_cost` e `technical_sheet`.
+- Sem novas permissões, sem novas telas e sem alteração de RLS ou Edge Functions.
+
 # 3.0.0-rc.6.16 — 2026-09-22
 
 ## Personalização visual e complementos

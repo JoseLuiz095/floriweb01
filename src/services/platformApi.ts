@@ -54,7 +54,7 @@ const alignSubscriptionDueDate = (dueDay: number, reference?: string | null) => 
 };
 
 type StoreRow = { id:string; slug:string; name:string; city:string|null; state:string|null; owner_name:string|null; owner_email:string|null; active:boolean; access_status:StoreAccessStatus; suspended_at:string|null; suspension_reason:string|null };
-type PlanRow = { id:string; code:string; name:string; product_limit:number|null; image_limit_per_product:number|null; custom_domain:boolean; reports:boolean; priority_support:boolean; monthly_price:number|string|null; setup_price:number|string|null; category_limit:number|null; addon_limit:number|null; admin_user_limit:number|null; sort_order:number|null; active:boolean };
+type PlanRow = { id:string; code:string; name:string; product_limit:number|null; image_limit_per_product:number|null; custom_domain:boolean; reports:boolean; priority_support:boolean; monthly_price:number|string|null; setup_price:number|string|null; category_limit:number|null; addon_limit:number|null; admin_user_limit:number|null; sort_order:number|null; active:boolean; marketing_benefits?: string[] | null };
 type SubscriptionRow = { id:string; store_id:string; plan_id:string; status:'trial'|'active'|'suspended'|'cancelled'; status_before_suspension:'trial'|'active'|null; started_at:string; expires_at:string|null; billing_amount:number|string|null; due_day:number|null; next_due_date:string|null };
 type DomainRow = { id:string; store_id:string; domain:string; is_primary:boolean; active:boolean };
 type CountRow = { id:string; store_id:string; active?:boolean };
@@ -64,7 +64,7 @@ const mapPlan = (row: PlanRow): Plan => ({
   id:row.id, code:row.code, name:row.name, productLimit:row.product_limit, imageLimitPerProduct:row.image_limit_per_product,
   customDomain:row.custom_domain, reports:row.reports, prioritySupport:row.priority_support,
   monthlyPrice:toNumber(row.monthly_price), setupPrice:toNumber(row.setup_price), categoryLimit:row.category_limit,
-  addonLimit:row.addon_limit, adminUserLimit:row.admin_user_limit, sortOrder:row.sort_order ?? 0, active:row.active,
+  addonLimit:row.addon_limit, adminUserLimit:row.admin_user_limit, sortOrder:row.sort_order ?? 0, active:row.active, marketingBenefits:Array.isArray(row.marketing_benefits)?row.marketing_benefits.filter(Boolean):[],
 });
 
 const mapPlatformSettings = (row?: PlatformSettingsRow): PlatformSettings => row ? {
@@ -110,7 +110,7 @@ export const platformApi = {
       name:plan.name, product_limit:plan.productLimit, image_limit_per_product:plan.imageLimitPerProduct,
       custom_domain:plan.customDomain, reports:plan.reports, priority_support:plan.prioritySupport,
       monthly_price:plan.monthlyPrice ?? 0, setup_price:plan.setupPrice ?? 0, category_limit:plan.categoryLimit ?? null,
-      addon_limit:plan.addonLimit ?? null, admin_user_limit:plan.adminUserLimit ?? null, sort_order:plan.sortOrder ?? 0, active:plan.active,
+      addon_limit:plan.addonLimit ?? null, admin_user_limit:plan.adminUserLimit ?? null, sort_order:plan.sortOrder ?? 0, active:plan.active, marketing_benefits:(plan.marketingBenefits||[]).map((item)=>item.trim()).filter(Boolean).slice(0,20),
     };
     const rows = await restFetch<PlanRow[]>(`plans?id=eq.${encodeURIComponent(plan.id)}&select=*`, {method:'PATCH',body,prefer:'return=representation'});
     return mapPlan(rows[0]);
