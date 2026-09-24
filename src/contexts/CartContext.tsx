@@ -64,12 +64,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if(item.variation&&!variation)return[];
         const addons=item.addons.map((selected)=>product.addons.find((addon)=>addon.id===selected.id&&addon.active)).filter((addon):addon is Addon=>Boolean(addon));
         const unitPrice=roundMoney((product.promotionalPrice??product.price)+(variation?.priceDelta??0));
-        const unchanged=item.productName===product.name
-          && item.imageUrl===product.imageUrl
-          && item.visualEmoji===product.visualEmoji
-          && item.unitPrice===unitPrice
-          && JSON.stringify(item.variation??null)===JSON.stringify(variation??null)
-          && JSON.stringify(item.addons)===JSON.stringify(addons);
+        const unchanged=item.productName===product.name&&item.imageUrl===product.imageUrl&&item.visualEmoji===product.visualEmoji&&item.unitPrice===unitPrice&&item.variation?.id===variation?.id&&item.addons.length===addons.length&&item.addons.every((addon,index)=>addon.id===addons[index]?.id&&addon.price===addons[index]?.price);
         return[unchanged?item:{...item,productName:product.name,imageUrl:product.imageUrl,visualEmoji:product.visualEmoji,unitPrice,variation,addons}];
       });
       return next.length===current.length&&next.every((item,index)=>item===current[index])?current:next;

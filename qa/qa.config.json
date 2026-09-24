@@ -2,7 +2,6 @@
   "projectName": "FloriWeb",
   "baseURL": "http://127.0.0.1:5173",
   "storeSlug": "floriweb-demo",
-  "checkoutPath": "finalizar",
   "publicRoutes": [
     "/",
     "/cadastro?plan=DEMO"
@@ -14,8 +13,7 @@
     "favicon",
     "ResizeObserver loop",
     "turnstile.*401",
-    "ERR_BLOCKED_BY_CLIENT",
-    "font-size:0;color:transparent\\s+NaN"
+    "ERR_BLOCKED_BY_CLIENT"
   ],
   "maskSelectors": [
     "time",

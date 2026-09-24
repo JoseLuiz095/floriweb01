@@ -6,7 +6,7 @@ import { InteractiveShowcase } from '../../components/marketing/InteractiveShowc
 import { ExistingValueSection } from '../../components/marketing/ExistingValueSection';
 
 const money=(value:number)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value);
-const fallback:PublicLanding={demoStoreSlug:'floriweb-demo',demoEnabled:true,demoDurationDays:14,contactProtected:true,stores:[],plans:[{id:'basic',code:'BASIC',name:'Essencial',monthlyPrice:39.9,marketingBenefits:[]},{id:'pro',code:'PRO',name:'Profissional',monthlyPrice:69.9,marketingBenefits:[]},{id:'premium',code:'PREMIUM',name:'Premium',monthlyPrice:119.9,marketingBenefits:[]}]};
+const fallback:PublicLanding={demoStoreSlug:'floriweb-demo',demoEnabled:true,demoDurationDays:14,contactProtected:true,stores:[],plans:[{id:'basic',code:'BASIC',name:'Essencial',monthlyPrice:39.9,marketingBenefits:[],productLimit:15,imageLimitPerProduct:3,categoryLimit:5,addonLimit:10,customDomain:false,reports:false,prioritySupport:false},{id:'pro',code:'PRO',name:'Profissional',monthlyPrice:69.9,marketingBenefits:[],productLimit:40,imageLimitPerProduct:6,categoryLimit:15,addonLimit:40,customDomain:false,reports:true,prioritySupport:true},{id:'premium',code:'PREMIUM',name:'Premium',monthlyPrice:119.9,marketingBenefits:[],productLimit:100,imageLimitPerProduct:10,categoryLimit:null,addonLimit:null,customDomain:true,reports:true,prioritySupport:true}]};
 
 type PlanMarketingContent={
   eyebrow:string;
@@ -44,11 +44,9 @@ const planMarketingContent:Record<string,PlanMarketingContent>={
       'Até 6 fotos por produto',
       'Catálogo, pedidos e WhatsApp integrados',
       'Entrega programada, retirada e mensagem no cartão',
-      'Analytics comercial para acompanhar desempenho',
       'Financeiro gerencial com entradas e despesas',
       'Leitura local de documentos financeiros',
       'Acompanhamento de recebimento dos pedidos',
-      'Suporte prioritário ao lojista',
     ],
     contactLabel:'Quero testar por 14 dias',
     intent:'trial',
@@ -67,14 +65,19 @@ const planMarketingContent:Record<string,PlanMarketingContent>={
       'Até 100 produtos ativos',
       'Categorias e adicionais sem limite definido',
       'Até 10 fotos por produto',
-      'Domínio próprio incluído',
-      'Analytics comercial liberado',
       'Financeiro gerencial completo',
-      'Suporte prioritário ao lojista',
     ],
     contactLabel:'Quero crescer com o Premium',
     intent:'commercial',
   },
+};
+
+const planFeatures=(plan:BillingPlan,content:PlanMarketingContent)=>{
+  const allowed=(feature:string)=>!((!plan.customDomain&&/dom[ií]nio pr[oó]prio/i.test(feature))||(!plan.reports&&/analytics|relat[oó]rio/i.test(feature))||(!plan.prioritySupport&&/suporte priorit[aá]rio/i.test(feature)));
+  const limits=[plan.productLimit==null?'Produtos sem limite definido':`Até ${plan.productLimit} produtos ativos`,plan.categoryLimit==null&&plan.addonLimit==null?'Categorias e adicionais sem limite definido':`Até ${plan.categoryLimit??'sem limite'} categorias e ${plan.addonLimit??'sem limite'} adicionais`,plan.imageLimitPerProduct==null?'Fotos por produto sem limite definido':`Até ${plan.imageLimitPerProduct} fotos por produto`];
+  const fixed=content.features.filter((feature)=>!/^Até \d+ (produtos|categorias|fotos)|Categorias e adicionais/i.test(feature));
+  const capabilities=[plan.customDomain&&'Domínio próprio incluído',plan.reports&&'Analytics e relatórios comerciais',plan.prioritySupport&&'Suporte prioritário ao lojista'].filter(Boolean) as string[];
+  return [...limits,...fixed,...capabilities,...(plan.marketingBenefits||[])].filter(allowed).filter((feature,index,all)=>all.indexOf(feature)===index);
 };
 
 const getPlanContent=(plan:BillingPlan,trialDays:number):PlanMarketingContent=>{
@@ -95,6 +98,7 @@ export default function Landing(){
   const demo=useMemo(()=>data.stores.find((store)=>store.slug===data.demoStoreSlug)||data.stores[0],[data]);
   const demoHref=`/${encodeURIComponent(data.demoStoreSlug)}`;
   const trialDays=data.demoEnabled?data.demoDurationDays:14;
+  const premiumPlan=data.plans.find((plan)=>plan.code==='PREMIUM');
   return <div className="flori-sales-page flori-sales-page-v62 flori-sales-page-v63 flori-sales-page-v615">
     <header className="flori-sales-nav"><a href="/" className="flori-sales-brand"><Flower2/><strong>FloriWeb</strong></a><nav><a href="#recursos">Recursos</a><a href="#demonstracao">Demonstração</a><a href="#lojas">Floriculturas</a><a href="#planos">Planos</a></nav><div><a href="/admin/login">Entrar</a><a className="flori-sales-primary" href="/cadastro?plan=DEMO">Criar conta e testar por {trialDays} dias</a></div></header>
     <main>
@@ -108,7 +112,14 @@ export default function Landing(){
 
       <InteractiveShowcase variant="flori" demoHref={demoHref}/>
       <section id="lojas" className="flori-sales-stores"><div className="flori-sales-heading"><span>FLORICULTURAS NA PLATAFORMA</span><h2>Conheça vitrines publicadas no FloriWeb.</h2></div>{data.stores.length?<div className="flori-store-grid">{data.stores.map((store)=><a href={`/${store.slug}`} key={store.id}><div className="flori-store-cover" style={store.heroUrl?{backgroundImage:`url(${store.heroUrl})`}:undefined}/><div><img src={store.logoUrl||'/assets/logo.svg'} alt=""/><section><h3>{store.name}</h3><p>{store.description}</p><span><MapPin size={13}/>{[store.city,store.state].filter(Boolean).join(' · ')}</span></section></div><strong>Visitar loja <ArrowRight size={15}/></strong></a>)}</div>:<p className="flori-sales-empty"><Store/>As lojas publicadas aparecerão aqui automaticamente.</p>}</section>
-      <section id="planos" className="flori-sales-plans flori-sales-plans-v62 flori-sales-plans-v615"><div className="flori-sales-heading"><span>PLANOS</span><h2>Planos acessíveis para começar e recursos que acompanham o crescimento da floricultura.</h2><p>Compare a capacidade de cada opção. O Profissional pode ser testado por {trialDays} dias antes da assinatura.</p></div><div className="flori-plan-grid flori-plan-grid-v615">{data.plans.filter((plan)=>plan.code!=='DEMO').map((plan)=>{const recommended=plan.code==='PRO';const content=getPlanContent(plan,trialDays);return <article key={plan.id} className={recommended?'recommended':''}>{recommended&&<b>Teste por {trialDays} dias</b>}<div className="flori-plan-header-v615"><small>{content.eyebrow}</small><h3>{plan.name}</h3><strong>{money(plan.monthlyPrice)} <span>/ mês</span></strong><p className="flori-plan-description-v615">{content.description}</p><div className="flori-plan-fit-v615"><strong>Indicado para:</strong><span>{content.idealFor}</span></div></div><ul>{[...content.features,...(plan.marketingBenefits||[])].filter((feature,index,all)=>all.indexOf(feature)===index).map((feature)=><li key={`${plan.id}-${feature}`}><Check/>{feature}</li>)}</ul><ProtectedContactButton className={`flori-plan-contact-v615 ${recommended?'flori-plan-contact-v615--featured':''}`} intent={content.intent}><MessageCircle size={16}/>{content.contactLabel}</ProtectedContactButton></article>})}<article className="flori-business-plan-rc610 flori-business-plan-v615"><b>SOB MEDIDA</b><small>BUSINESS</small><h3>Business</h3><strong>Sob consulta <span>· valor definido pelo projeto</span></strong><p className="flori-plan-description-v615">Uma solução desenhada para operações que precisam de integrações, automações ou processos além dos planos padronizados.</p><div className="flori-plan-fit-v615 flori-plan-fit-v615--dark"><strong>Indicado para:</strong><span>redes, multiunidades e floriculturas com processos próprios ou necessidades específicas de integração.</span></div><ul><li><Check/>Domínio próprio incluído</li><li><Check/>Multiunidade e processos personalizados</li><li><Check/>Integrações com ERP, financeiro e APIs</li><li><Check/>Automações e módulos sob medida</li><li><Check/>Acompanhamento técnico dedicado</li></ul><ProtectedContactButton className="flori-plan-contact-v615 flori-plan-contact-v615--dark" intent="commercial"><MessageCircle size={16}/>Quero avaliar um projeto Business</ProtectedContactButton></article></div><div className="flori-premium-story-rc618"><div><span>POR QUE SUBIR PARA O PREMIUM?</span><h3>Mais do que catálogo: relacionamento, recorrência e controle.</h3></div><p>Quando a floricultura cresce, histórico de clientes, recuperação de vendas, estoque simples e domínio próprio ajudam a vender novamente sem transformar o sistema em um ERP pesado.</p></div><p className="flori-plan-note"><ShieldCheck/>O telefone comercial não fica exposto na landing e é liberado apenas após validação anti-robô.</p></section>
+      <section id="planos" className="flori-sales-plans flori-sales-plans-v62 flori-sales-plans-v615">
+        <div className="flori-sales-heading"><span>PLANOS</span><h2>Planos acessíveis para começar e recursos que acompanham o crescimento da floricultura.</h2><p>Compare a capacidade de cada opção. O Profissional pode ser testado por {trialDays} dias antes da assinatura.</p></div>
+        <div className="flori-plan-grid flori-plan-grid-v615">{data.plans.filter((plan)=>plan.code!=='DEMO').map((plan)=>{const recommended=plan.code==='PRO';const content=getPlanContent(plan,trialDays);return <article key={plan.id} className={recommended?'recommended':''}>{recommended&&<b>Teste por {trialDays} dias</b>}<div className="flori-plan-header-v615"><small>{content.eyebrow}</small><h3>{plan.name}</h3><strong>{money(plan.monthlyPrice)} <span>/ mês</span></strong><p className="flori-plan-description-v615">{content.description}</p><div className="flori-plan-fit-v615"><strong>Indicado para:</strong><span>{content.idealFor}</span></div></div><ul>{planFeatures(plan,content).map((feature)=><li key={`${plan.id}-${feature}`}><Check/>{feature}</li>)}</ul><ProtectedContactButton className={`flori-plan-contact-v615 ${recommended?'flori-plan-contact-v615--featured':''}`} intent={content.intent}><MessageCircle size={16}/>{content.contactLabel}</ProtectedContactButton></article>})}
+          <article className="flori-business-plan-rc610 flori-business-plan-v615"><b>SOB MEDIDA</b><small>BUSINESS</small><h3>Business</h3><strong>Sob consulta <span>· valor definido pelo projeto</span></strong><p className="flori-plan-description-v615">Uma solução desenhada para operações que precisam de integrações, automações ou processos além dos planos padronizados.</p><div className="flori-plan-fit-v615 flori-plan-fit-v615--dark"><strong>Indicado para:</strong><span>redes, multiunidades e floriculturas com processos próprios ou necessidades específicas de integração.</span></div><ul><li><Check/>Presença digital sob medida</li><li><Check/>Multiunidade e processos personalizados</li><li><Check/>Integrações com ERP, financeiro e APIs</li><li><Check/>Automações e módulos sob medida</li><li><Check/>Acompanhamento técnico dedicado</li></ul><ProtectedContactButton className="flori-plan-contact-v615 flori-plan-contact-v615--dark" intent="commercial"><MessageCircle size={16}/>Quero avaliar um projeto Business</ProtectedContactButton></article>
+        </div>
+        <div className="flori-premium-story-rc618"><div><span>POR QUE SUBIR PARA O PREMIUM?</span><h3>Mais do que catálogo: relacionamento, recorrência e controle.</h3></div><p>Quando a floricultura cresce, histórico de clientes, recuperação de vendas, estoque simples{premiumPlan?.customDomain?', domínio próprio':''} ajudam a vender novamente sem transformar o sistema em um ERP pesado.</p></div>
+        <p className="flori-plan-note"><ShieldCheck/>O telefone comercial não fica exposto na landing e é liberado apenas após validação anti-robô.</p>
+      </section>
       <section className="flori-sales-final flori-sales-final-v62 flori-sales-final-v615"><Heart/><div><span>PRONTO PARA CONVERSAR?</span><h2>Encontre o plano certo para a rotina da sua floricultura.</h2><p>O contato público é protegido e o suporte técnico permanece reservado aos lojistas autenticados.</p></div><ProtectedContactButton className="flori-sales-final-button-rc64 flori-sales-final-contact-v615" intent="commercial"><MessageCircle size={17}/>Entrar em contato no WhatsApp</ProtectedContactButton></section>
     </main>
     <footer className="flori-sales-footer"><span><Flower2/>FloriWeb</span><p>Catálogo, pedidos e gestão para floriculturas.</p><div><a href="/admin/login">Painel da loja</a><a href="/admin-master/login">Admin Master</a></div></footer>

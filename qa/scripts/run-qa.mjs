@@ -3,16 +3,17 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const root = process.cwd();
-const pw = path.join(root, 'node_modules', '@playwright', 'test', 'cli.js');
+const pw = process.platform === 'win32'
+  ? path.join(root, 'node_modules', '.bin', 'playwright.cmd')
+  : path.join(root, 'node_modules', '.bin', 'playwright');
 
 if (!fs.existsSync(pw)) {
-  console.error('ERRO: Playwright ainda nao esta instalado em qa/. Execute novamente a opcao desejada no painel.');
+  console.error('ERRO: Playwright ainda nao esta instalado em qa/. Execute a opcao PREPARAR do painel.');
   process.exit(1);
 }
 
 const run = (args) => {
-  const result = spawnSync(process.execPath, [pw, ...args], { cwd: root, stdio: 'inherit', shell: false });
-  if (result.error) console.error(`ERRO ao iniciar Playwright: ${result.error.message}`);
+  const result = spawnSync(pw, args, { cwd: root, stdio: 'inherit', shell: false });
   if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
 };
 

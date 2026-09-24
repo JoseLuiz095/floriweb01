@@ -1,7 +1,6 @@
 import { ArrowRight, Clock3, Flower2, ShoppingBag } from 'lucide-react';
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import PlatformHelpButton from '../components/PlatformHelpButton';
 import { useCart } from '../contexts/CartContext';
 import { useStore } from '../contexts/StoreContext';
 import { isFloriWebMarketingRoot } from '../lib/config';
@@ -40,7 +39,6 @@ export default function StoreLayout() {
           </div>
           <small>FloriWeb · catálogo digital para floriculturas</small>
         </section>
-        <PlatformHelpButton context="store" storeName={unavailableStoreName} />
       </main>
     );
   }
@@ -63,7 +61,6 @@ export default function StoreLayout() {
           <span className="mobile-cart-dock__action">Ver carrinho <ArrowRight size={17} /></span>
         </a>
       )}
-      <PlatformHelpButton context="store" storeName={settings.name} />
     </main>
   );
 }

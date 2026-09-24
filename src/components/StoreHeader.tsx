@@ -31,7 +31,7 @@ export function StoreHeader({searchOpen,onSearchClick}:{searchOpen?:boolean;onSe
   },[hoursOpen]);
 
   return <>
-    <div className="hero" style={{backgroundImage:`url(${settings.heroUrl})`}} aria-label="Capa da floricultura"/>
+    <div className="hero" role="img" style={{backgroundImage:`url(${settings.heroUrl})`}} aria-label="Capa da floricultura"/>
     <section className="store-card container">
       <ImageWithFallback className="store-card__logo" src={settings.logoUrl} alt={`Logo ${settings.name}`}/>
       <div className="store-card__main">

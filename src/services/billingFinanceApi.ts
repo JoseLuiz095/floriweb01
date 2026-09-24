@@ -6,6 +6,13 @@ export type BillingPlan = {
   name: string;
   monthlyPrice: number;
   marketingBenefits?: string[];
+  productLimit?: number | null;
+  imageLimitPerProduct?: number | null;
+  categoryLimit?: number | null;
+  addonLimit?: number | null;
+  customDomain?: boolean;
+  reports?: boolean;
+  prioritySupport?: boolean;
 };
 
 export type BillingSettings = {
@@ -142,6 +149,13 @@ type PublicLandingRpc = {
     name: string;
     monthly_price?: number | string | null;
     marketing_benefits?: string[] | null;
+    product_limit?: number | null;
+    image_limit_per_product?: number | null;
+    category_limit?: number | null;
+    addon_limit?: number | null;
+    custom_domain?: boolean | null;
+    reports?: boolean | null;
+    priority_support?: boolean | null;
   }>;
 };
 
@@ -240,6 +254,13 @@ export const loadPublicLanding = (): Promise<PublicLanding> => {
         name: plan.name,
         monthlyPrice: number(plan.monthly_price),
         marketingBenefits: Array.isArray(plan.marketing_benefits) ? plan.marketing_benefits.filter(Boolean) : [],
+        productLimit: plan.product_limit ?? null,
+        imageLimitPerProduct: plan.image_limit_per_product ?? null,
+        categoryLimit: plan.category_limit ?? null,
+        addonLimit: plan.addon_limit ?? null,
+        customDomain: Boolean(plan.custom_domain),
+        reports: Boolean(plan.reports),
+        prioritySupport: Boolean(plan.priority_support),
       })),
     }))
     .catch((error) => {

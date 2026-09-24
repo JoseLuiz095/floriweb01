@@ -15,7 +15,7 @@
     "test:visual": "playwright test tests/visual/public-visual.spec.ts --project=chromium",
     "test:a11y": "playwright test tests/a11y --project=chromium",
     "test:cross-browser": "playwright test tests/smoke tests/e2e --project=chromium --project=firefox --project=webkit",
-    "update:snapshots": "playwright test tests/visual/public-visual.spec.ts --project=chromium --update-snapshots && node scripts/sync-baseline.mjs",
+    "update:snapshots": "playwright test tests/visual/public-visual.spec.ts --project=chromium --update-snapshots",
     "report": "playwright show-report playwright-report",
     "auth:admin": "node scripts/capture-auth.mjs admin",
     "auth:master": "node scripts/capture-auth.mjs master",
