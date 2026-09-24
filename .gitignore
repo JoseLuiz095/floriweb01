@@ -31,3 +31,11 @@ payload/
 payload_*/
 *.zip
 styles_rc*_append.css
+qa/node_modules/
+qa/.auth/*.json
+qa/test-results/
+qa/playwright-report/
+qa/blob-report/
+.automation/
+payload_rc620/
+_backup_rc620_*/

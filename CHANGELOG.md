@@ -1,3 +1,16 @@
+# FloriWeb v3.0.0-rc.6.20
+- Corrige o fluxo de publicacao para criar commit, branch e tag antes do push atomico e manter diagnostico em caso de falha.
+- Corrige o QA publico para usar a rota real /finalizar, executar Playwright de forma confiavel no Windows e sincronizar a baseline visual.
+- Evita atualizacoes repetidas do estado do carrinho quando a validacao de produtos nao altera os itens.
+
+- Simplifica a automacao para `qa:lite`, sem login, Turnstile ou MFA obrigatorios.
+- Adiciona Playwright para paginas publicas, navegacao segura, responsividade, acessibilidade e visual regression publica.
+- Adiciona detectores de overflow horizontal, erros de console, erros JavaScript, imagens quebradas e respostas HTTP 5xx.
+- Mantem baseline visual controlada: o visual so e cobrado depois da primeira baseline aprovada.
+- Documenta checklist manual curto para Admin, Admin Master, checkout autenticado/manual e fluxos que alteram dados.
+- Documenta padrao visual unico para desktop, tablet e mobile sem migrar o stack para Tailwind/shadcn.
+- Nao cria migrations novas, nao executa migrations automaticamente e nao altera regras de negocio.
+
 # FloriWeb v3.0.0-rc.6.19
 
 - Horário de atendimento com rolagem horizontal segura em telas menores.

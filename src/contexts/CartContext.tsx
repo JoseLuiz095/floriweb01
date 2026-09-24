@@ -39,7 +39,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const setItems = (updater: (current: CartItem[]) => CartItem[]) => setState((current)=>{
     const base=current.key===cartKey?current.items:readCart(cartKey);
-    return{key:cartKey,items:updater(base)};
+    const next=updater(base);
+    if(current.key===cartKey&&next===current.items)return current;
+    return{key:cartKey,items:next};
   });
 
   const value = useMemo<CartContextValue>(() => ({
@@ -54,15 +56,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     updateQuantity:(id,quantity)=>setItems((current)=>current.map((item)=>item.id===id?{...item,quantity:Math.max(1,quantity)}:item)),
     removeItem:(id)=>setItems((current)=>current.filter((item)=>item.id!==id)),
     clear:()=>setItems(()=>[]),
-    validateAgainstProducts:(products)=>setItems((current)=>current.flatMap((item)=>{
-      const product=products.find((p)=>p.id===item.productId&&p.active&&p.stockStatus!=='unavailable');
-      if(!product)return[];
-      const variation=item.variation?product.variations.find((v)=>v.id===item.variation?.id&&v.active):undefined;
-      if(item.variation&&!variation)return[];
-      const addons=item.addons.map((selected)=>product.addons.find((addon)=>addon.id===selected.id&&addon.active)).filter((addon):addon is Addon=>Boolean(addon));
-      const unitPrice=roundMoney((product.promotionalPrice??product.price)+(variation?.priceDelta??0));
-      return[{...item,productName:product.name,imageUrl:product.imageUrl,visualEmoji:product.visualEmoji,unitPrice,variation,addons}];
-    })),
+    validateAgainstProducts:(products)=>setItems((current)=>{
+      const next=current.flatMap((item)=>{
+        const product=products.find((p)=>p.id===item.productId&&p.active&&p.stockStatus!=='unavailable');
+        if(!product)return[];
+        const variation=item.variation?product.variations.find((v)=>v.id===item.variation?.id&&v.active):undefined;
+        if(item.variation&&!variation)return[];
+        const addons=item.addons.map((selected)=>product.addons.find((addon)=>addon.id===selected.id&&addon.active)).filter((addon):addon is Addon=>Boolean(addon));
+        const unitPrice=roundMoney((product.promotionalPrice??product.price)+(variation?.priceDelta??0));
+        const unchanged=item.productName===product.name
+          && item.imageUrl===product.imageUrl
+          && item.visualEmoji===product.visualEmoji
+          && item.unitPrice===unitPrice
+          && JSON.stringify(item.variation??null)===JSON.stringify(variation??null)
+          && JSON.stringify(item.addons)===JSON.stringify(addons);
+        return[unchanged?item:{...item,productName:product.name,imageUrl:product.imageUrl,visualEmoji:product.visualEmoji,unitPrice,variation,addons}];
+      });
+      return next.length===current.length&&next.every((item,index)=>item===current[index])?current:next;
+    }),
   }),[items,cartKey]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -1,0 +1,26 @@
+{
+  "projectName": "FloriWeb",
+  "baseURL": "http://127.0.0.1:5173",
+  "storeSlug": "floriweb-demo",
+  "checkoutPath": "finalizar",
+  "publicRoutes": [
+    "/",
+    "/cadastro?plan=DEMO"
+  ],
+  "adminStart": "/admin",
+  "masterStart": "/admin-master",
+  "maxDiscoveredRoutes": 40,
+  "ignoredConsolePatterns": [
+    "favicon",
+    "ResizeObserver loop",
+    "turnstile.*401",
+    "ERR_BLOCKED_BY_CLIENT",
+    "font-size:0;color:transparent\\s+NaN"
+  ],
+  "maskSelectors": [
+    "time",
+    "[data-qa-dynamic]",
+    ".updated-at",
+    ".current-time"
+  ]
+}

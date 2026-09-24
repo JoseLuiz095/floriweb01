@@ -41,7 +41,7 @@ const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
 const packageJson = JSON.parse(read('package.json'));
 
-ok('Versao V3 RC6.19', packageJson.version === '3.0.0-rc.6.19');
+ok('Versao V3 RC6.20', packageJson.version === '3.0.0-rc.6.20');
 const selfSignup = read('src/pages/store/SelfSignup.tsx');
 const selfSignupService = read('src/services/selfServiceSignup.ts');
 const signupRequests = read('src/pages/master/SignupRequests.tsx');
@@ -338,3 +338,11 @@ ok('RC6.19 mensagens editaveis e botao manual',settingsRc618.includes('Mensagens
 ok('RC6.19 migration de preferencias existe',migrationRc619.includes('customer_message_templates')&&exists('supabase/VALIDAR_RC619.sql'));
 if(failures.length){console.error(`\n${failures.length} falha(s) nas verificacoes RC6.19:`);for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
 console.log(`Smoke final FloriWeb RC6.19: ${checks.length} verificacoes aprovadas.`);
+
+// FloriWeb RC6.20 - QA Lite sem login obrigatorio
+ok('RC6.20 scripts QA Lite',packageJson.scripts?.['qa:lite']?.includes('test:lite')&&packageJson.scripts?.['qa'] === 'npm run qa:lite'&&packageJson.scripts?.['qa:update']?.includes('update:snapshots'));
+ok('RC6.20 infraestrutura Playwright publica',exists('qa/package.json')&&exists('qa/scripts/run-qa.mjs')&&exists('qa/tests/responsive/public-responsive.spec.ts')&&exists('qa/tests/visual/public-visual.spec.ts'));
+ok('RC6.20 detectores QA Lite',read('qa/tests/helpers/project.ts').includes('imageErrors')&&read('qa/tests/helpers/project.ts').includes('serverErrors')&&read('qa/tests/helpers/project.ts').includes('assertNoDocumentOverflow'));
+ok('RC6.20 checklist manual e padrao visual',exists('docs/QA_LITE.md')&&read('docs/QA_LITE.md').includes('Checklist manual curto')&&exists('docs/PADRAO_VISUAL_UNICO.md')&&read('docs/PADRAO_VISUAL_UNICO.md').includes('Desktop - 1280'));
+if(failures.length){console.error(`\n${failures.length} falha(s) nas verificacoes RC6.20:`);for(const failure of failures)console.error(`- ${failure}`);process.exit(1)}
+console.log(`Smoke final FloriWeb RC6.20: ${checks.length} verificacoes aprovadas.`);
