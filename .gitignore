@@ -51,3 +51,6 @@ styles_*_append.css
 !.automation/*.ps1
 !.automation/*.mjs
 !FLORIWEB.bat
+_backup_*/
+styles_rc*_append.css
+.automation/
