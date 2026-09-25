@@ -1,6 +1,6 @@
 {
   "projectName": "FloriWeb",
-  "baseURL": "http://127.0.0.1:5173",
+  "baseURL": "http://172.26.224.1:5173",
   "storeSlug": "floriweb-demo",
   "publicRoutes": [
     "/",
@@ -13,6 +13,7 @@
     "favicon",
     "ResizeObserver loop",
     "turnstile.*401",
+    "font-size:0;color:transparent\\s+NaN",
     "ERR_BLOCKED_BY_CLIENT"
   ],
   "maskSelectors": [

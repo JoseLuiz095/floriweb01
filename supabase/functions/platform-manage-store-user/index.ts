@@ -63,6 +63,18 @@ const validatePassword = (password: string) => {
   }
 };
 
+const jwtAssuranceLevel = (jwt: string) => {
+  try {
+    const encoded = jwt.split('.')[1];
+    if (!encoded) return '';
+    const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(encoded.length / 4) * 4, '=');
+    const payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(normalized), (char) => char.charCodeAt(0)))) as { aal?: string };
+    return payload.aal || '';
+  } catch {
+    return '';
+  }
+};
+
 async function findAuthUserByEmail(adminClient: ReturnType<typeof createClient>, email: string) {
   let page = 1;
   const perPage = 1000;
@@ -107,8 +119,7 @@ Deno.serve(async (req) => {
     if (userError || !userData.user) return json({ error: 'Não autenticado.' }, 401);
 
     const jwt = authorization.replace(/^Bearer\s+/i, '');
-    const { data: aalData, error: aalError } = await userClient.auth.mfa.getAuthenticatorAssuranceLevel(jwt);
-    if (aalError || aalData.currentLevel !== 'aal2') {
+    if (jwtAssuranceLevel(jwt) !== 'aal2') {
       return json({ error: 'MFA obrigatório para operações do Admin Master.', code: 'MFA_AAL2_REQUIRED' }, 403);
     }
 

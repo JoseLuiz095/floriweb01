@@ -17,6 +17,6 @@ export const appConfig = {
 export const isSupabaseConfigured = Boolean(appConfig.supabaseUrl && appConfig.supabaseAnonKey);
 export const isDemoMode = import.meta.env.DEV && !isSupabaseConfigured;
 
-const PLATFORM_HOSTS = new Set(['floriweb.joseluizacama.workers.dev','localhost','127.0.0.1']);
+const PLATFORM_HOSTS = new Set(['floriweb.joseluizacama.workers.dev','localhost','127.0.0.1','172.26.224.1']);
 export const isFloriWebPlatformHost = (hostname:string) => PLATFORM_HOSTS.has(String(hostname||'').trim().toLowerCase());
 export const isFloriWebMarketingRoot = (pathname:string,hostname:string) => pathname==='/' && isFloriWebPlatformHost(hostname);

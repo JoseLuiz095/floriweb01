@@ -20,6 +20,37 @@ function Distribution({title,icon:Icon,data}:{title:string;icon:typeof CreditCar
   return <section className="admin-card analytics-distribution"><div className="admin-card__header"><div><span className="eyebrow">DISTRIBUIÇÃO</span><h2>{title}</h2></div><Icon size={21}/></div><div className="analytics-bars">{data.length?data.slice(0,8).map(([label,value])=><div key={label}><div><span>{label}</span><strong>{value}</strong></div><div className="analytics-track"><span style={{width:`${Math.max(4,(value/max)*100)}%`}}/></div></div>):<p className="analytics-empty">Ainda não há dados suficientes.</p>}</div></section>;
 }
 
+function WeekdayOrdersChart({data}:{data:[string,number][]}){
+  const chartWidth=680;
+  const baseline=196;
+  const chartHeight=136;
+  const max=Math.max(1,...data.map(([,value])=>value));
+  const groupWidth=(chartWidth-64)/Math.max(data.length,1);
+  const barWidth=Math.min(54,groupWidth*0.56);
+  const total=data.reduce((sum,[,value])=>sum+value,0);
+
+  return <section className="admin-card analytics-chart-card" aria-labelledby="analytics-weekday-title">
+    <div className="admin-card__header"><div><span className="eyebrow">RITMO DE VENDAS</span><h2 id="analytics-weekday-title">Pedidos por dia da semana</h2></div><BarChart3 size={21}/></div>
+    <p className="analytics-chart__intro">Veja em quais dias os pedidos se concentram e planeje produção, equipe e entregas.</p>
+    <div className="analytics-chart__viewport">
+      <svg className="analytics-chart" viewBox={`0 0 ${chartWidth} 236`} role="img" aria-labelledby="analytics-weekday-svg-title analytics-weekday-svg-description" focusable="false">
+        <title id="analytics-weekday-svg-title">Pedidos por dia da semana</title>
+        <desc id="analytics-weekday-svg-description">Distribuição de {total} pedidos não cancelados entre os dias da semana.</desc>
+        {[0,1,2,3].map((line)=><line key={line} className="analytics-chart__gridline" x1="30" x2={chartWidth-18} y1={baseline-(chartHeight/3)*line} y2={baseline-(chartHeight/3)*line}/>)}
+        {data.map(([label,value],index)=>{
+          const height=value?Math.max(5,(value/max)*chartHeight):0;
+          const x=32+index*groupWidth+(groupWidth-barWidth)/2;
+          const y=baseline-height;
+          return <g key={label}><rect className="analytics-chart__bar" x={x} y={y} width={barWidth} height={height} rx="8" aria-hidden="true"/><text className="analytics-chart__value" x={x+barWidth/2} y={value?y-8:baseline-8} textAnchor="middle">{value}</text><text className="analytics-chart__label" x={x+barWidth/2} y="222" textAnchor="middle">{label}</text></g>;
+        })}
+      </svg>
+    </div>
+    <ul className="analytics-chart__sr-only" aria-label="Dados do gráfico de pedidos por dia da semana">
+      {data.map(([label,value])=><li key={label}>{label}: {value} {value===1?'pedido':'pedidos'}</li>)}
+    </ul>
+  </section>;
+}
+
 const emptyReport = (): AnalyticsReport => ({
   from:'',to:'',storefrontSessions:0,productViews:0,productViewSessions:0,addToCartSessions:0,checkoutSessions:0,orderSessions:0,orders:0,whatsappClicks:0,
   conversionRate:0,cartAbandonmentRate:0,checkoutAbandonmentRate:0,whatsappRate:0,revenue:0,averageTicket:0,topProducts:[],viewedNotSold:[],
@@ -78,6 +109,7 @@ export default function Analytics(){
     </>}
 
     <div className="analytics-stat-grid"><article className="admin-card analytics-stat"><span><ShoppingBag size={19}/></span><div><small>Pedidos no painel</small><strong>{valid.length}</strong><p>histórico operacional carregado</p></div></article><article className="admin-card analytics-stat"><span><PackageCheck size={19}/></span><div><small>Receita registrada</small><strong>{currency.format(operationalRevenue)}</strong><p>histórico disponível no painel</p></div></article><article className="admin-card analytics-stat"><span><BarChart3 size={19}/></span><div><small>Ticket médio histórico</small><strong>{currency.format(operationalAverage)}</strong><p>pedidos carregados</p></div></article><article className="admin-card analytics-stat"><span><Truck size={19}/></span><div><small>WhatsApp histórico</small><strong>{sent}</strong><p>{valid.length?`${Math.round((sent/valid.length)*100)}% dos pedidos`:'sem pedidos'}</p></div></article></div>
+    <WeekdayOrdersChart data={weekdays}/>
     <div className="analytics-grid"><Distribution title="Formas de pagamento" icon={CreditCard} data={payment}/><Distribution title="Entrega × retirada" icon={Truck} data={fulfillment}/><Distribution title="Bairros / zonas" icon={MapPin} data={neighborhoods}/><Distribution title="Dias da semana" icon={BarChart3} data={weekdays}/><Distribution title="Horários dos pedidos" icon={ShoppingBag} data={hours}/></div>
   </>;
 }

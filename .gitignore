@@ -26,16 +26,28 @@ dist
 .impeccable/live/deferred-svelte-component-accepts.json
 .impeccable/live/*.png
 # impeccable-ignore-end
-_backup_*/
-payload/
-payload_*/
-*.zip
-styles_rc*_append.css
 qa/node_modules/
 qa/.auth/*.json
 qa/test-results/
 qa/playwright-report/
 qa/blob-report/
-.automation/
 payload_rc620/
 _backup_rc620_*/
+*.zip
+_backup*/
+_BACKUP*/
+*_backup*/
+_HISTORICO_AUXILIARES/
+ARQUIVOS_FINAIS/
+.wrangler/
+test-results/
+payload/
+payload_*/
+styles_*_append.css
+
+# Publicacao/QA reproduzivel: estes arquivos fazem parte do fluxo oficial.
+!.automation/
+!.automation/*.cmd
+!.automation/*.ps1
+!.automation/*.mjs
+!FLORIWEB.bat

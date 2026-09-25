@@ -48,6 +48,7 @@ const signupRequests = read('src/pages/master/SignupRequests.tsx');
 const mRc612 = read('supabase/migrations/202609171945_floriweb_rc612_self_service_signup.sql');
 ok('RC6.12 auto cadastro publico', app.includes('path=\"/cadastro\"') && selfSignup.includes('Criar nova conta'));
 ok('RC6.12 Demo com elegibilidade cadastral', exists('supabase/migrations/202609180800_floriweb_rc612_trial_eligibility_hardening.sql') && selfSignup.includes('validação cadastral do negócio') && selfSignupService.includes('complete_self_service_signup_v2'));
+ok('Auto cadastro orienta e-mail já existente', selfSignupService.includes('identities.length === 0') && selfSignup.includes('Já tenho conta'));
 ok('RC6.12 workspace pendente protegido', mRc612.includes("s.approval_status='pending'") && auth.includes('pendingWorkspace') && app.includes('preparationRouteAllowed') && adminLayout.includes('preparationNavAllowed') && adminLayout.includes('self-service-approval-banner'));
 ok('RC6.12 Master aprova auto cadastro', signupRequests.includes('Liberar') && selfSignupService.includes('platform_approve_self_service_signup_v2'));
 
@@ -113,7 +114,7 @@ ok('Supabase JS oficial configurado', exists('src/lib/supabase.ts') && read('src
 ok('Logout real Supabase', auth.includes('auth.signOut'));
 ok('Multi-loja carrega todos os vinculos', auth.includes('memberships') && auth.includes('selectStore'));
 ok('MFA Master AAL2 no app', app.includes("mfaLevel !== 'aal2'") && exists('src/pages/master/Mfa.tsx'));
-ok('MFA Master AAL2 na Edge Function', edge.includes('MFA_AAL2_REQUIRED') && edge.includes('getAuthenticatorAssuranceLevel'));
+ok('MFA Master AAL2 na Edge Function', edge.includes('MFA_AAL2_REQUIRED') && edge.includes('jwtAssuranceLevel') && manageStoreUserEdge.includes('jwtAssuranceLevel'));
 ok('MFA Master AAL2 no banco', m100.includes("auth.jwt()->>'aal'") && m100.includes("= 'aal2'"));
 ok('Policy publica de produtos corrige isolamento', m100.includes('c.store_id = products.store_id') && m100.includes('products.category_id'));
 ok('Storage metadata e escrita isolados por loja', m100.includes('floriweb_storage_public_read') && m100.includes('public.store_accessible(s.id)') && m100.includes('is_store_admin'));

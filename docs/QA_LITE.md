@@ -12,6 +12,11 @@ Diminuir o trabalho de teste e correcao nas novas versoes sem criar dependencia 
 4. Abra o relatorio com `npm run qa:report` quando o Playwright apontar falha.
 5. Publique a release somente depois do Preview passar no mesmo `qa:lite`.
 
+## Publicacao limpa para Preview
+
+Depois dos testes locais, execute `PUBLICAR_QA_RELEASE.bat` ou `npm run qa:publish`.
+O fluxo monta uma copia temporaria a partir do codigo atual, executa `npm ci` e `npm run validate`, remove backups, ZIPs, `payload`, `dist`, `node_modules`, credenciais e relatorios de QA, e entao oferece o push de uma branch/tag nova. Ele nunca apaga branch ou tag existente. Se falhar, a pasta temporaria e informada para diagnostico.
+
 ## Checklist manual curto
 
 Use este checklist apenas para fluxos autenticados ou que alteram dados.

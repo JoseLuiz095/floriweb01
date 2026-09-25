@@ -113,6 +113,13 @@ export async function createSelfServiceAccount(input: SelfServiceSignupInput) {
   });
   if (error) throw error;
 
+  // Supabase pode responder sem erro quando o e-mail já existe, especialmente
+  // com confirmação de e-mail habilitada. Nesse caso não existe um novo
+  // cadastro para confirmar e a pessoa precisa usar o fluxo de conta existente.
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    throw new Error('Este e-mail já possui uma conta. Selecione “Já tenho conta” para solicitar ou continuar o acesso.');
+  }
+
   if (data.session) {
     const completion = await completeSelfServiceSignup(input);
     return { requiresEmailConfirmation: false, completion };

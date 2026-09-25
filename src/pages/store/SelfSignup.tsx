@@ -17,6 +17,7 @@ const allowedPlan=(code:string)=>['DEMO','BASIC','PRO','PREMIUM'].includes(code.
 export default function SelfSignup(){
   const navigate=useNavigate();
   const[searchParams]=useSearchParams();
+  const requestedPlan=(searchParams.get('plan')||'DEMO').toUpperCase();
   const[plans,setPlans]=useState<BillingPlan[]>([DEMO_PLAN]);
   const[demoDays,setDemoDays]=useState(30);
   const[demoEnabled,setDemoEnabled]=useState(true);
@@ -28,7 +29,7 @@ export default function SelfSignup(){
   const[captchaToken,setCaptchaToken]=useState('');
   const[captchaReset,setCaptchaReset]=useState(0);
   const[form,setForm]=useState<SelfServiceSignupInput>({
-    storeName:'',ownerName:'',email:'',password:'',planCode:(searchParams.get('plan')||'DEMO').toUpperCase(),city:'',state:'',contactPhone:'',businessDocument:'',captchaToken:'',
+    storeName:'',ownerName:'',email:'',password:'',planCode:allowedPlan(requestedPlan)?requestedPlan:'DEMO',city:'',state:'',contactPhone:'',businessDocument:'',captchaToken:'',
   });
 
   useEffect(()=>{
