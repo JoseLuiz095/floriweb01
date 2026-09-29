@@ -39,6 +39,7 @@ const m140 = read('supabase/migrations/202608270140_v3_checkout_edge_turnstile.s
 const m145 = read('supabase/migrations/202608270145_v3_checkout_idempotency.sql');
 const m150 = read('supabase/migrations/202608270150_v3_rc2_diagnostics.sql');
 const mMadeToOrder = read('supabase/diagnostics/202608280100_v3_made_to_order_lead_time.sql');
+const config = read('supabase/config.toml');
 const packageJson = JSON.parse(read('package.json'));
 
 ok('Versao V3 RC6.20', packageJson.version === '3.0.0-rc.6.20');
@@ -48,7 +49,9 @@ const signupRequests = read('src/pages/master/SignupRequests.tsx');
 const mRc612 = read('supabase/migrations/202609171945_floriweb_rc612_self_service_signup.sql');
 ok('RC6.12 auto cadastro publico', app.includes('path=\"/cadastro\"') && selfSignup.includes('Criar nova conta'));
 ok('RC6.12 Demo com elegibilidade cadastral', exists('supabase/migrations/202609180800_floriweb_rc612_trial_eligibility_hardening.sql') && selfSignup.includes('validação cadastral do negócio') && selfSignupService.includes('complete_self_service_signup_v2'));
-ok('Auto cadastro orienta e-mail já existente', selfSignupService.includes('identities.length === 0') && selfSignup.includes('Já tenho conta'));
+ok('Auto cadastro cria conta sem depender de e-mail', selfSignupService.includes('flori-public-self-signup') && selfSignupService.includes('signInWithPassword') && selfSignup.includes('Já tenho conta'));
+ok('Auto cadastro explica limite compartilhado de e-mail', selfSignupService.includes('limite de envio de e-mails') && selfSignupService.includes('compartilhado pelo FoodWeb e pelo FloriWeb'));
+ok('Cadastro público protegido no servidor', exists('supabase/functions/flori-public-self-signup/index.ts') && exists('supabase/migrations/202609291100_floriweb_public_self_signup_rate_limit.sql') && read('supabase/migrations/202609291100_floriweb_public_self_signup_rate_limit.sql').includes('complete_self_service_signup_for_user_v1') && config.includes('flori-public-self-signup'));
 ok('RC6.12 workspace pendente protegido', mRc612.includes("s.approval_status='pending'") && auth.includes('pendingWorkspace') && app.includes('preparationRouteAllowed') && adminLayout.includes('preparationNavAllowed') && adminLayout.includes('self-service-approval-banner'));
 ok('RC6.12 Master aprova auto cadastro', signupRequests.includes('Liberar') && selfSignupService.includes('platform_approve_self_service_signup_v2'));
 
@@ -186,6 +189,7 @@ ok('Bundle SQL RC2 existe', exists('supabase/releases/20260827_v3_rc2_bundle.sql
 ok('Validacao SQL RC2 existe', exists('supabase/tests/VALIDAR_V3_RC2.sql'));
 ok('Documentacao RC2 existe', exists('docs/V3_RC2_APLICACAO.md'));
 ok('Deploy publica as duas Edge Functions', read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('functions deploy platform-create-store') && read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('functions deploy public-checkout'));
+ok('Deploy do cadastro público incluído', read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('flori-public-self-signup') && read('.github/workflows/deploy-supabase-functions.yml').includes('flori-public-self-signup'));
 ok('Workflow publica as duas Edge Functions', read('.github/workflows/deploy-supabase-functions.yml').includes('functions deploy platform-create-store') && read('.github/workflows/deploy-supabase-functions.yml').includes('functions deploy public-checkout'));
 ok('Deploy fixa Supabase CLI', read('DEPLOY_SUPABASE_FUNCTIONS.bat').includes('supabase@2.116.0'));
 

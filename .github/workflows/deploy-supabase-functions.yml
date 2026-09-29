@@ -49,3 +49,10 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: supabase functions deploy public-checkout --project-ref "$SUPABASE_PROJECT_REF" --no-verify-jwt
+
+      - name: Publicar flori-public-self-signup
+        if: steps.config.outputs.ready == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: supabase functions deploy flori-public-self-signup --project-ref "$SUPABASE_PROJECT_REF" --no-verify-jwt

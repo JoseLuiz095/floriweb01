@@ -30,7 +30,7 @@ echo AVISO: branch/tag desta release ja existem.
 set /p "RECREATE=Digite R para remover SOMENTE esta branch/tag e recriar, ou ENTER para cancelar: "
 if /I not "!RECREATE!"=="R" exit /b 1
 if "!HAS_BRANCH!"=="1" git push "%REPO%" --delete "%BRANCH%" || exit /b 1
-if "!HAS_TAG!"=="1" git push "%REPO%" ":refs/tags/%TAG%" || exit /b 1
+if "!HAS_TAG!"=="1" echo AVISO: a tag existente sera sobrescrita somente no push final.
 
 :refs_ok
 echo [1/7] Clonando main atual...
@@ -60,10 +60,11 @@ if /I not "!CONF!"=="S" (popd&goto cleanup)
 git config user.name >nul 2>&1 || git config user.name "Release Automation"
 git config user.email >nul 2>&1 || git config user.email "release@local"
 git commit -m "release: FloriWeb v3.0.0-rc.6.20 QA Lite" || (popd&goto fail_keep)
+git tag -d "%TAG%" >nul 2>&1
 git tag -a "%TAG%" -m "FloriWeb v3.0.0-rc.6.20 QA Lite" || (popd&goto fail_keep)
 
 echo [6/7] Enviando branch e tag de forma atomica...
-git push --atomic origin "%BRANCH%" "%TAG%" || (popd&goto fail_keep)
+git push --atomic --force origin "%BRANCH%" "%TAG%" || (popd&goto fail_keep)
 
 echo [7/7] Conferindo refs remotas...
 git ls-remote --exit-code --heads origin "refs/heads/%BRANCH%" >nul 2>&1 || (popd&goto fail_keep)

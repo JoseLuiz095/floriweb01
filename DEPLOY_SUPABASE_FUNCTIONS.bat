@@ -43,6 +43,16 @@ if errorlevel 1 (
 )
 
 echo.
+echo Publicando cadastro publico sem dependencia do e-mail do Supabase Auth...
+call npx supabase@2.116.0 functions deploy flori-public-self-signup --project-ref "%PROJECT_REF%" --no-verify-jwt
+if errorlevel 1 (
+  echo.
+  echo FALHA ao publicar flori-public-self-signup.
+  pause
+  exit /b 1
+)
+
+echo.
 echo Listando Edge Functions publicadas...
 call npx supabase@2.116.0 functions list --project-ref "%PROJECT_REF%"
 
