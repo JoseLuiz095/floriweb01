@@ -6,3 +6,6 @@ verify_jwt = false
 
 [functions.flori-public-contact]
 verify_jwt = false
+
+[functions.flori-public-self-signup]
+verify_jwt = false
